@@ -3,7 +3,7 @@ export const BOOKING_STATUSES = ["pending", "contacted", "booked", "completed", 
 export type BookingStatus = (typeof BOOKING_STATUSES)[number];
 
 export type Booking = {
-  id: string;
+  id: number;
   access_token: string;
   pickup_location: string;
   drop_location: string;

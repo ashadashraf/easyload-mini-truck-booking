@@ -348,6 +348,7 @@ textarea {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
+  padding-bottom: 3px;
 }
 
 .booking-id {
@@ -457,10 +458,10 @@ textarea {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 12px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  display: flex;
   gap: 10px;
   padding: 12px 14px;
+  width: 100%;
 }
 
 .route-location {
@@ -486,7 +487,8 @@ textarea {
 
 @media (max-width: 1025px) {
   .route-path {
-    grid-template-columns: 1fr auto 1fr;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .route-location {
@@ -526,8 +528,19 @@ textarea {
 
 @media (max-width: 640px) {
   .route-path {
+    flex-direction: row;
+  }
+
+  .route-row {
     flex-direction: column;
     align-items: stretch;
+    gap: 8px;
+  }
+
+  .meta-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
 
   .route-times {
@@ -705,10 +718,27 @@ textarea {
   color: var(--accent);
 }
 
-.booking-head {
-  align-items: start;
-  display: grid;
+.route-path {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.status {
+  flex-shrink: 0;
+}
+
+.meta-row {
+  align-items: flex-start;
+  display: flex;
   gap: 12px;
+  justify-content: space-between;
+}
+
+.meta {
+  flex: 1;
 }
 
 .route {

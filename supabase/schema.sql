@@ -1,5 +1,7 @@
+create sequence if not exists public.booking_id_seq start with 1000000;
+
 create table if not exists public.bookings (
-  id uuid primary key default gen_random_uuid(),
+  id bigint primary key default nextval('public.booking_id_seq'),
   access_token text not null unique,
   pickup_location text not null,
   drop_location text not null,

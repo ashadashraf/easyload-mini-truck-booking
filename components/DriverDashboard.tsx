@@ -13,11 +13,11 @@ type Draft = {
 
 export function DriverDashboard({ driverAccessToken }: { driverAccessToken: string }) {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [drafts, setDrafts] = useState<Record<string, Draft>>({});
+  const [drafts, setDrafts] = useState<Record<number, Draft>>({});
   const [error, setError] = useState("");
-  const [recordErrors, setRecordErrors] = useState<Record<string, string>>({});
+  const [recordErrors, setRecordErrors] = useState<Record<number, string>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [savingId, setSavingId] = useState<string | null>(null);
+  const [savingId, setSavingId] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [language, setLanguage] = useState<"en" | "ml">("en");
 
@@ -96,7 +96,7 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
 
     const normalizedDigits = normalizedQuery.replace(/\D/g, "");
     return bookings.filter((booking) => {
-      const idMatch = booking.id.toLowerCase().includes(normalizedQuery);
+      const idMatch = booking.id.toString().includes(normalizedQuery) || booking.id.toString().includes(normalizedDigits);
       const phone = booking.phone_number.toLowerCase();
       const phoneMatch = phone.includes(normalizedQuery);
       const phoneDigits = phone.replace(/\D/g, "");
@@ -211,7 +211,7 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
     }
   }
 
-  function setDraft(id: string, patch: Partial<Draft>) {
+  function setDraft(id: number, patch: Partial<Draft>) {
     setDrafts((current) => ({
       ...current,
       [id]: {
@@ -274,19 +274,26 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
             <article className="booking-card" key={booking.id}>
               {recordError ? <p className="error record-error">{recordError}</p> : null}
               <div className="booking-head">
-                <div>
+                <div className="status-header">
+                  <span className={`status ${booking.status}`}>{booking.status}</span>
+                  <div className="booking-id">
+                    <span className="muted">Booking ID: {booking.id}</span>
+                  </div>
+                </div>
+                <div className="route-section">
                   <div className="route-path">
                     <span className="route-location">{booking.pickup_location}</span>
                     <span className="route-arrow" aria-hidden="true">→</span>
                     <span className="route-location">{booking.drop_location}</span>
                   </div>
-                  <div className="meta">
-                    <span>{copy.pickupMeta} {formatDateTime(booking.pickup_time)}</span>
-                    <span>{copy.dropMeta} {formatDateTime(booking.drop_time)}</span>
-                    <span>{copy.customerMeta} {booking.phone_number}</span>
+                  <div className="meta-row">
+                    <div className="meta">
+                      <span>{copy.pickupMeta} {formatDateTime(booking.pickup_time)}</span>
+                      <span>{copy.dropMeta} {formatDateTime(booking.drop_time)}</span>
+                      <span>{copy.customerMeta} {booking.phone_number}</span>
+                    </div>
                   </div>
                 </div>
-                <span className={`status ${booking.status}`}>{booking.status}</span>
               </div>
 
               <div className="prices">

@@ -109,7 +109,8 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
     const now = new Date();
     const pickupDate = new Date(form.pickup_time);
 
-    if (!form.pickup_time || Number.isNaN(pickupDate.getTime()) || pickupDate < now) {
+    // Allow pickup times that are not more than 5 minutes in the past (for timing differences)
+    if (!form.pickup_time || Number.isNaN(pickupDate.getTime()) || pickupDate.getTime() < now.getTime() - 300000) {
       throw new Error("Pickup time must be set to a future date.");
     }
 
@@ -120,7 +121,7 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
         throw new Error("Drop time must be a valid date.");
       }
 
-      if (dropDate < now) {
+      if (dropDate.getTime() < now.getTime() - 300000) {
         throw new Error("Drop time must be set to a future date.");
       }
 

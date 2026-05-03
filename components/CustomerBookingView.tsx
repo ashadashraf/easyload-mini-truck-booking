@@ -59,7 +59,7 @@ export function CustomerBookingView({ token }: { token: string }) {
         <div className="status-header">
           <span className={`status ${booking.status}`}>{booking.status}</span>
           <div className="booking-id">
-            <span className="muted">Booking ID: {booking.id.slice(-8)}</span>
+            <span className="muted">Booking ID: {booking.id}</span>
           </div>
         </div>
 
