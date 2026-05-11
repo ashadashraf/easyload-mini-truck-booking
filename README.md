@@ -49,6 +49,10 @@ The system stores three prices:
 - `expected_price`: optional customer input
 - `final_price`: actual agreed transaction value, set by the driver
 
+Fare estimate rule: AED 60 minimum up to 5 km, then AED 4 per km after 5 km. Examples: 5 km = AED 60, 10 km = AED 80, 15 km = AED 100.
+
+`FARE_INCLUDED_KM` is the distance covered by the minimum charge. The `FARE_FALLBACK_*` values only limit the guessed distance when Google Maps is not configured or fails; they are not service distance limits.
+
 `final_price` is required before a booking can be marked as `booked`.
 
 ## API Endpoints
@@ -109,10 +113,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=""
 DRIVER_AUTH_EMAIL="driver@example.com"
 
 NEXT_PUBLIC_CURRENCY="AED"
-FARE_BASE_AED=45
-FARE_PER_KM_AED=4.5
-FARE_MIN_DISTANCE_KM=5
-FARE_MAX_DISTANCE_KM=65
+FARE_BASE_AED=60
+FARE_PER_KM_AED=4
+FARE_INCLUDED_KM=5
+FARE_FALLBACK_MIN_DISTANCE_KM=1
+FARE_FALLBACK_MAX_DISTANCE_KM=250
 
 GOOGLE_MAPS_API_KEY=""
 GOOGLE_MAPS_REGION="ae"

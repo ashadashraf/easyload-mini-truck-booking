@@ -16,6 +16,7 @@ export function parseCreateBookingInput(body: unknown): CreateBookingInput {
   const dropTime = optionalDateString(data.drop_time, "drop_time");
   const phoneNumber = requiredString(data.phone_number, "phone_number");
   const expectedPrice = optionalMoney(data.expected_price, "expected_price");
+  const needHelper = optionalBoolean(data.need_helper, "need_helper") ?? false;
 
   return {
     pickup_location: pickupLocation,
@@ -23,7 +24,8 @@ export function parseCreateBookingInput(body: unknown): CreateBookingInput {
     pickup_time: pickupTime,
     drop_time: dropTime,
     phone_number: phoneNumber,
-    expected_price: expectedPrice
+    expected_price: expectedPrice,
+    need_helper: needHelper
   };
 }
 
@@ -31,13 +33,14 @@ export function parseUpdateBookingInput(body: unknown): UpdateBookingInput {
   const data = asRecord(body);
   const status = data.status === undefined ? undefined : parseStatus(data.status);
   const finalPrice = data.final_price === undefined ? undefined : optionalMoney(data.final_price, "final_price");
+  const helperCharge = data.helper_charge === undefined ? undefined : optionalMoney(data.helper_charge, "helper_charge");
   const notes = data.notes === undefined ? undefined : optionalString(data.notes, "notes");
 
   if (status === "booked" && (finalPrice === undefined || finalPrice === null)) {
     throw new ValidationError("final_price is required when status is booked.");
   }
 
-  return { status, final_price: finalPrice, notes };
+  return { status, final_price: finalPrice, helper_charge: helperCharge, notes };
 }
 
 export function validateStatusTransition(currentStatus: BookingStatus, nextStatus: BookingStatus) {
@@ -105,6 +108,18 @@ function optionalMoney(value: unknown, field: string): number | null {
   }
 
   return Math.round(parsed * 100) / 100;
+}
+
+function optionalBoolean(value: unknown, field: string): boolean | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value !== "boolean") {
+    throw new ValidationError(`${field} must be true or false.`);
+  }
+
+  return value;
 }
 
 function parseStatus(value: unknown): BookingStatus {

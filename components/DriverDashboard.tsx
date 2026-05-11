@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Booking, BookingStatus } from "@/lib/bookings/types";
 import { getStatusOptions, isBackwardStatusChange, STATUS_LABELS } from "@/lib/bookings/status-flow";
 import { DRIVER_NAME, phoneHref, whatsappHref } from "@/lib/driver";
@@ -8,6 +8,7 @@ import { formatDateTime, formatDistance, formatMoney } from "@/lib/format";
 
 type Draft = {
   final_price: string;
+  helper_charge: string;
   notes: string;
 };
 
@@ -20,6 +21,7 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
   const [savingId, setSavingId] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [language, setLanguage] = useState<"en" | "ml">("en");
+  const finalPriceRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   const copy = useMemo(() => {
     const translations = {
@@ -39,6 +41,9 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
         estimatedPrice: "Estimated",
         expectedPrice: "Expected",
         finalPrice: "Final",
+        helperNeeded: "Helper needed",
+        helperCharge: "Helper charge",
+        helperChargeHint: "Not included in ride final price. Confirm after checking with the helper.",
         distanceLabel: "Distance",
         estimateSource: "Estimate source",
         finalPriceLabel: "Final price",
@@ -69,6 +74,9 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
         estimatedPrice: "അനുമാനിച്ച",
         expectedPrice: "പ്രതീക്ഷിച്ച",
         finalPrice: "അവസാന",
+        helperNeeded: "Helper needed",
+        helperCharge: "Helper charge",
+        helperChargeHint: "Not included in ride final price. Confirm after checking with the helper.",
         distanceLabel: "ദൂരം",
         estimateSource: "അനുമാന ഉറവ",
         finalPriceLabel: "അവസാന വില",
@@ -133,6 +141,7 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
             booking.id,
             {
               final_price: booking.final_price?.toString() ?? "",
+              helper_charge: booking.helper_charge?.toString() ?? "",
               notes: booking.notes ?? ""
             }
           ])
@@ -146,8 +155,9 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
   }
 
   async function updateBooking(booking: Booking, status?: BookingStatus) {
-    const draft = drafts[booking.id] ?? { final_price: "", notes: "" };
+    const draft = drafts[booking.id] ?? { final_price: "", helper_charge: "", notes: "" };
     const finalPrice = draft.final_price === "" ? null : Number(draft.final_price);
+    const helperCharge = draft.helper_charge === "" ? null : Number(draft.helper_charge);
 
     if (status && isBackwardStatusChange(booking.status, status)) {
       const confirmed = window.confirm(
@@ -160,10 +170,14 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
     }
 
     if (status === "booked" && finalPrice === null) {
+      const finalPriceInput = finalPriceRefs.current[booking.id];
       setRecordErrors((current) => ({
         ...current,
         [booking.id]: "Final price is required before marking this booking as booked."
       }));
+      finalPriceInput?.setCustomValidity("Final price is required before marking this booking as booked.");
+      finalPriceInput?.reportValidity();
+      finalPriceInput?.focus();
       return;
     }
 
@@ -184,6 +198,7 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
         body: JSON.stringify({
           status,
           final_price: finalPrice,
+          helper_charge: helperCharge,
           notes: draft.notes || null
         })
       });
@@ -198,6 +213,7 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
         ...current,
         [booking.id]: {
           final_price: data.booking.final_price?.toString() ?? "",
+          helper_charge: data.booking.helper_charge?.toString() ?? "",
           notes: data.booking.notes ?? ""
         }
       }));
@@ -212,10 +228,15 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
   }
 
   function setDraft(id: number, patch: Partial<Draft>) {
+    if (patch.final_price !== undefined) {
+      finalPriceRefs.current[id]?.setCustomValidity("");
+    }
+
     setDrafts((current) => ({
       ...current,
       [id]: {
         final_price: current[id]?.final_price ?? "",
+        helper_charge: current[id]?.helper_charge ?? "",
         notes: current[id]?.notes ?? "",
         ...patch
       }
@@ -259,16 +280,19 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
 
       <div className="cards">
         {filteredBookings.map((booking) => {
-          const draft = drafts[booking.id] ?? { final_price: "", notes: "" };
+          const draft = drafts[booking.id] ?? { final_price: "", helper_charge: "", notes: "" };
           const statusOptions = getStatusOptions(booking.status);
+          const finalPriceIsRequired = booking.status === "booked" || statusOptions.includes("booked");
           const recordError = recordErrors[booking.id];
           const customerMessage = [
             `Hello, this is ${DRIVER_NAME} about your mini truck booking.`,
             `Pickup: ${booking.pickup_location}`,
             `Drop: ${booking.drop_location}`,
             `Pickup time: ${formatDateTime(booking.pickup_time)}`,
-            `Estimated price: ${formatMoney(booking.estimated_price)}`
-          ].join("\n");
+            `Estimated price: ${formatMoney(booking.estimated_price)}`,
+            booking.need_helper ? "Helper needed for loading/unloading: Yes" : null,
+            booking.helper_charge ? `Helper charge: ${formatMoney(booking.helper_charge)} (not included in ride final price)` : null
+          ].filter(Boolean).join("\n");
 
           return (
             <article className="booking-card" key={booking.id}>
@@ -310,6 +334,16 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
                   {formatMoney(booking.final_price)}
                 </div>
                 <div className="price-tile">
+                  <span>{copy.helperNeeded}</span>
+                  {booking.need_helper ? "Yes" : "No"}
+                </div>
+                {booking.need_helper ? (
+                  <div className="price-tile">
+                    <span>{copy.helperCharge}</span>
+                    {formatMoney(booking.helper_charge)}
+                  </div>
+                ) : null}
+                <div className="price-tile">
                   <span>{copy.distanceLabel}</span>
                   {formatDistance(booking.estimated_distance_km)}
                 </div>
@@ -326,6 +360,10 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
                     id={`final-${booking.id}`}
                     min="0"
                     onChange={(event) => setDraft(booking.id, { final_price: event.target.value })}
+                    ref={(element) => {
+                      finalPriceRefs.current[booking.id] = element;
+                    }}
+                    required={finalPriceIsRequired}
                     step="0.01"
                     type="number"
                     value={draft.final_price}
@@ -340,6 +378,20 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
                     value={draft.notes}
                   />
                 </div>
+                {booking.need_helper ? (
+                  <div className="field">
+                    <label htmlFor={`helper-${booking.id}`}>{copy.helperCharge}</label>
+                    <input
+                      id={`helper-${booking.id}`}
+                      min="0"
+                      onChange={(event) => setDraft(booking.id, { helper_charge: event.target.value })}
+                      placeholder={copy.helperChargeHint}
+                      step="0.01"
+                      type="number"
+                      value={draft.helper_charge}
+                    />
+                  </div>
+                ) : null}
               </div>
 
               <div className="actions">

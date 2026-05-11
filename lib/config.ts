@@ -19,10 +19,11 @@ function listFromEnv(name: string, fallback: string[]) {
 
 export const fareConfig = {
   currency: stringFromEnv("NEXT_PUBLIC_CURRENCY", "AED"),
-  baseFare: numberFromEnv("FARE_BASE_AED", 45),
-  perKm: numberFromEnv("FARE_PER_KM_AED", 4.5),
-  minDistanceKm: numberFromEnv("FARE_MIN_DISTANCE_KM", 5),
-  maxDistanceKm: numberFromEnv("FARE_MAX_DISTANCE_KM", 65),
+  baseFare: numberFromEnv("FARE_BASE_AED", 60),
+  perKm: numberFromEnv("FARE_PER_KM_AED", 4),
+  includedKm: numberFromEnv("FARE_INCLUDED_KM", 5),
+  fallbackMinDistanceKm: numberFromEnv("FARE_FALLBACK_MIN_DISTANCE_KM", 1),
+  fallbackMaxDistanceKm: numberFromEnv("FARE_FALLBACK_MAX_DISTANCE_KM", 250),
   googleMapsApiKey: stringFromEnv("GOOGLE_MAPS_API_KEY", ""),
   googleMapsRegion: stringFromEnv("GOOGLE_MAPS_REGION", "ae")
 };

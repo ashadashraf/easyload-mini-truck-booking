@@ -15,6 +15,8 @@ create table if not exists public.bookings (
     check (estimate_source in ('google_maps', 'local_fallback', 'reused')),
   expected_price numeric(10, 2),
   final_price numeric(10, 2),
+  need_helper boolean not null default false,
+  helper_charge numeric(10, 2),
   status text not null default 'pending'
     check (status in ('pending', 'contacted', 'booked', 'completed', 'rejected')),
   notes text,
@@ -22,6 +24,12 @@ create table if not exists public.bookings (
   updated_at timestamptz not null default now(),
   constraint booked_requires_final_price check (status <> 'booked' or final_price is not null)
 );
+
+alter table public.bookings
+  add column if not exists need_helper boolean not null default false;
+
+alter table public.bookings
+  add column if not exists helper_charge numeric(10, 2);
 
 update public.bookings
 set access_token = gen_random_uuid()::text || '-' || gen_random_uuid()::text

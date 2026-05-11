@@ -281,6 +281,48 @@ textarea:focus-visible {
   gap: 7px;
 }
 
+.check-field {
+  align-content: start;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.check-field label {
+  align-items: center;
+  display: flex;
+  gap: 9px;
+}
+
+.check-field input[type="checkbox"] {
+  flex: 0 0 auto;
+  min-height: 18px;
+  padding: 0;
+  width: 18px;
+}
+
+.helper-note,
+.helper-status-note {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.helper-status-note {
+  display: grid;
+  gap: 4px;
+}
+
+.helper-status-note strong {
+  color: var(--text);
+}
+
 label {
   color: var(--text);
   font-size: 14px;
@@ -413,6 +455,29 @@ textarea {
 .meta-item {
   color: var(--muted);
   font-size: 14px;
+}
+
+.customer-notes {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+}
+
+.customer-notes p {
+  line-height: 1.5;
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.notes-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .contact-actions {

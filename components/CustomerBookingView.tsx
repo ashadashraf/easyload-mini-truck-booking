@@ -44,8 +44,10 @@ export function CustomerBookingView({ token }: { token: string }) {
     `Pickup: ${booking.pickup_location}`,
     `Drop: ${booking.drop_location}`,
     `Pickup time: ${formatDateTime(booking.pickup_time)}`,
-    `Status: ${booking.status}`
-  ].join("\n");
+    `Status: ${booking.status}`,
+    booking.need_helper ? "Helper needed for loading/unloading: Yes" : null,
+    booking.helper_charge ? `Helper charge: ${formatMoney(booking.helper_charge)} (not included in ride final price)` : null
+  ].filter(Boolean).join("\n");
 
   return (
     <section className="panel">
@@ -102,7 +104,20 @@ export function CustomerBookingView({ token }: { token: string }) {
               <span className="price-value">{formatMoney(booking.final_price)}</span>
             </div>
           )}
+          {booking.need_helper && (
+            <div className="price-item">
+              <span className="price-label">Helper Charge</span>
+              <span className="price-value">{formatMoney(booking.helper_charge)}</span>
+            </div>
+          )}
         </div>
+
+        {booking.need_helper && (
+          <div className="helper-status-note">
+            <strong>Helper needed for loading/unloading</strong>
+            <span>Helper charge is not included in the ride final price and may vary by hours and work intensity.</span>
+          </div>
+        )}
 
         <div className="booking-meta">
           <span className="meta-item">
@@ -114,6 +129,13 @@ export function CustomerBookingView({ token }: { token: string }) {
           </span>
         </div>
 
+        {booking.notes && (
+          <div className="customer-notes">
+            <span className="notes-label">Driver notes</span>
+            <p>{booking.notes}</p>
+          </div>
+        )}
+
         <div className="contact-actions">
           <div className="action-buttons">
             <a className="button primary" href={phoneHref(DRIVER_PHONE)}>
@@ -122,9 +144,6 @@ export function CustomerBookingView({ token }: { token: string }) {
             <a className="button" href={whatsappHref(DRIVER_PHONE, message)} rel="noreferrer" target="_blank">
               💬 WhatsApp Driver
             </a>
-          </div>
-          <div className="driver-info">
-            <span className="muted">Driver: {booking.phone_number}</span>
           </div>
         </div>
       </div>

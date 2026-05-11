@@ -3,10 +3,11 @@ import { estimateFareForBooking, fareFromKnownDistance } from "./pricing";
 import { Booking, CreateBookingInput, UpdateBookingInput } from "./types";
 import { validateStatusTransition } from "./validation";
 
-type BookingRow = Omit<Booking, "estimated_price" | "expected_price" | "final_price" | "estimated_distance_km"> & {
+type BookingRow = Omit<Booking, "estimated_price" | "expected_price" | "final_price" | "helper_charge" | "estimated_distance_km"> & {
   estimated_price: number | string;
   expected_price: number | string | null;
   final_price: number | string | null;
+  helper_charge: number | string | null;
   estimated_distance_km: number | string | null;
 };
 
@@ -24,6 +25,8 @@ const BOOKING_COLUMNS = `
   estimate_source,
   expected_price,
   final_price,
+  need_helper,
+  helper_charge,
   status,
   notes,
   created_at,
@@ -78,6 +81,8 @@ export async function createBooking(input: CreateBookingInput): Promise<Booking>
       estimate_source: fareEstimate.estimateSource,
       expected_price: input.expected_price ?? null,
       final_price: null,
+      need_helper: input.need_helper ?? false,
+      helper_charge: null,
       status: "pending",
       notes: null
     })
@@ -137,6 +142,10 @@ export async function updateBooking(id: string, input: UpdateBookingInput): Prom
     patch.final_price = input.final_price;
   }
 
+  if (input.helper_charge !== undefined) {
+    patch.helper_charge = input.helper_charge;
+  }
+
   if (input.notes !== undefined) {
     patch.notes = input.notes;
   }
@@ -191,7 +200,8 @@ function mapBookingRow(row: BookingRow): Booking {
     estimated_price: toNumber(row.estimated_price),
     estimated_distance_km: toNullableNumber(row.estimated_distance_km),
     expected_price: toNullableNumber(row.expected_price),
-    final_price: toNullableNumber(row.final_price)
+    final_price: toNullableNumber(row.final_price),
+    helper_charge: toNullableNumber(row.helper_charge)
   };
 }
 

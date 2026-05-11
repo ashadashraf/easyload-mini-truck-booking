@@ -12,6 +12,7 @@ type FormState = {
   drop_time: string;
   phone_number: string;
   expected_price: string;
+  need_helper: boolean;
 };
 
 const initialForm: FormState = {
@@ -20,7 +21,8 @@ const initialForm: FormState = {
   pickup_time: "",
   drop_time: "",
   phone_number: "",
-  expected_price: ""
+  expected_price: "",
+  need_helper: false
 };
 
 function getMinDateTime() {
@@ -63,6 +65,7 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
       `Pickup time: ${formatDateTime(booking.pickup_time)}`,
       `Estimated price: ${formatMoney(booking.estimated_price)}`,
       booking.expected_price ? `Expected price: ${formatMoney(booking.expected_price)}` : null,
+      booking.need_helper ? "Helper needed for loading/unloading: Yes" : null,
       accessLink ? `Private booking link: ${accessLink}` : null
     ]
       .filter(Boolean)
@@ -136,7 +139,8 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
       pickup_time: form.pickup_time,
       drop_time: form.drop_time || null,
       phone_number: form.phone_number,
-      expected_price: form.expected_price || null
+      expected_price: form.expected_price || null,
+      need_helper: form.need_helper
     };
 
     try {
@@ -228,6 +232,24 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
               value={form.expected_price}
               onChange={(value) => setForm({ ...form, expected_price: value })}
             />
+            <div className="field check-field">
+              <label htmlFor="need_helper">
+                <input
+                  checked={form.need_helper}
+                  id="need_helper"
+                  name="need_helper"
+                  onChange={(event) => setForm({ ...form, need_helper: event.target.checked })}
+                  type="checkbox"
+                />
+                Need helper for loading/unloading
+              </label>
+              {form.need_helper ? (
+                <p className="helper-note">
+                  Helper charge is not included in the ride final price. It may vary based on hours and work intensity,
+                  and the helper will confirm the amount.
+                </p>
+              ) : null}
+            </div>
           </div>
           {error ? <p className="error">{error}</p> : null}
           <div className="actions">
@@ -266,6 +288,12 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
                 <span className="price-row">
                   <strong>Expected price</strong>
                   {formatMoney(booking.expected_price)}
+                </span>
+              ) : null}
+              {booking.need_helper ? (
+                <span className="price-row">
+                  <strong>Helper</strong>
+                  Needed for loading/unloading. Helper charge is not included in the ride final price.
                 </span>
               ) : null}
             </div>

@@ -16,6 +16,8 @@ export type Booking = {
   estimate_source: "google_maps" | "local_fallback" | "reused";
   expected_price: number | null;
   final_price: number | null;
+  need_helper: boolean;
+  helper_charge: number | null;
   status: BookingStatus;
   notes: string | null;
   created_at: string;
@@ -29,10 +31,12 @@ export type CreateBookingInput = {
   drop_time?: string | null;
   phone_number: string;
   expected_price?: number | null;
+  need_helper?: boolean;
 };
 
 export type UpdateBookingInput = {
   status?: BookingStatus;
   final_price?: number | null;
+  helper_charge?: number | null;
   notes?: string | null;
 };

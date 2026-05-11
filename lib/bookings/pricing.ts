@@ -30,7 +30,7 @@ type GoogleDistanceMatrixResponse = {
 
 export function estimateFare({ pickupLocation, dropLocation }: EstimateInput): number {
   const distanceKm = estimateDistanceFromText(pickupLocation, dropLocation);
-  return roundMoney(fareConfig.baseFare + distanceKm * fareConfig.perKm);
+  return priceFromDistance(distanceKm);
 }
 
 export async function estimateFareForBooking(input: EstimateInput): Promise<FareEstimate> {
@@ -62,8 +62,8 @@ export function fareFromKnownDistance(
 
 export function estimateDistanceFromText(pickupLocation: string, dropLocation: string): number {
   const normalized = `${pickupLocation}|${dropLocation}`.toLowerCase().trim();
-  const minDistance = Math.max(1, Math.floor(fareConfig.minDistanceKm));
-  const maxDistance = Math.max(minDistance, Math.floor(fareConfig.maxDistanceKm));
+  const minDistance = Math.max(1, Math.floor(fareConfig.fallbackMinDistanceKm));
+  const maxDistance = Math.max(minDistance, Math.floor(fareConfig.fallbackMaxDistanceKm));
   let hash = 0;
 
   for (let index = 0; index < normalized.length; index += 1) {
@@ -122,7 +122,9 @@ async function estimateWithGoogleDistanceMatrix(input: EstimateInput): Promise<F
 }
 
 function priceFromDistance(distanceKm: number) {
-  return roundMoney(fareConfig.baseFare + distanceKm * fareConfig.perKm);
+  const includedKm = Math.max(0, fareConfig.includedKm);
+  const billableExtraKm = Math.max(0, distanceKm - includedKm);
+  return roundMoney(fareConfig.baseFare + billableExtraKm * fareConfig.perKm);
 }
 
 function roundDistance(value: number) {
