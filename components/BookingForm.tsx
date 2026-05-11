@@ -63,6 +63,7 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
       `Pickup: ${booking.pickup_location}`,
       `Drop: ${booking.drop_location}`,
       `Pickup time: ${formatDateTime(booking.pickup_time)}`,
+      booking.drop_time ? `Drop time: ${formatDateTime(booking.drop_time)}` : null,
       `Estimated price: ${formatMoney(booking.estimated_price)}`,
       booking.expected_price ? `Expected price: ${formatMoney(booking.expected_price)}` : null,
       booking.need_helper ? "Helper needed for loading/unloading: Yes" : null,
