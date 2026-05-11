@@ -30,7 +30,7 @@ export const fareConfig = {
 
 export const driverConfig = {
   name: stringFromEnv("NEXT_PUBLIC_DRIVER_NAME", "EasyLoad Driver"),
-  phone: stringFromEnv("NEXT_PUBLIC_DRIVER_PHONE", "971500000000"),
+  phone: stringFromEnv("NEXT_PUBLIC_DRIVER_PHONE", "0567044691"),
   location: stringFromEnv("NEXT_PUBLIC_DRIVER_LOCATION", "UAE"),
   vehicle: stringFromEnv("NEXT_PUBLIC_DRIVER_VEHICLE", "Mini truck"),
   hours: stringFromEnv("NEXT_PUBLIC_DRIVER_HOURS", "Available daily"),
