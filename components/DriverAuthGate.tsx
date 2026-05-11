@@ -3,10 +3,11 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getSupabaseBrowserClient, hasSupabaseBrowserConfig } from "@/lib/supabase/browser";
+import { DriverContact } from "@/lib/driver";
 import { AppHeader } from "./AppHeader";
 import { DriverDashboard } from "./DriverDashboard";
 
-export function DriverAuthGate() {
+export function DriverAuthGate({ driver }: { driver: DriverContact }) {
   const hasConfig = hasSupabaseBrowserConfig();
   const supabase = useMemo(() => (hasConfig ? getSupabaseBrowserClient() : null), [hasConfig]);
   const [session, setSession] = useState<Session | null>(null);
@@ -128,7 +129,7 @@ export function DriverAuthGate() {
   return (
     <>
       <AppHeader onLogout={logout} userEmail={session.user.email} />
-      <DriverDashboard driverAccessToken={session.access_token} />
+      <DriverDashboard driver={driver} driverAccessToken={session.access_token} />
     </>
   );
 }

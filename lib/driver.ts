@@ -1,7 +1,7 @@
-import { driverConfig } from "./config";
-
-export const DRIVER_NAME = driverConfig.name;
-export const DRIVER_PHONE = driverConfig.phone;
+export type DriverContact = {
+  name: string;
+  phone: string;
+};
 
 export function phoneHref(phoneNumber: string) {
   return `tel:+${phoneNumber.replace(/\D/g, "")}`;

@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Booking } from "@/lib/bookings/types";
-import { DRIVER_PHONE, phoneHref, whatsappHref } from "@/lib/driver";
+import { DriverContact, phoneHref, whatsappHref } from "@/lib/driver";
 import { formatDateTime, formatDistance, formatMoney } from "@/lib/format";
 
-export function CustomerBookingView({ token }: { token: string }) {
+export function CustomerBookingView({ driver, token }: { driver: DriverContact; token: string }) {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -138,10 +138,10 @@ export function CustomerBookingView({ token }: { token: string }) {
 
         <div className="contact-actions">
           <div className="action-buttons">
-            <a className="button primary" href={phoneHref(DRIVER_PHONE)}>
+            <a className="button primary" href={phoneHref(driver.phone)}>
               📞 Call Driver
             </a>
-            <a className="button" href={whatsappHref(DRIVER_PHONE, message)} rel="noreferrer" target="_blank">
+            <a className="button" href={whatsappHref(driver.phone, message)} rel="noreferrer" target="_blank">
               💬 WhatsApp Driver
             </a>
           </div>

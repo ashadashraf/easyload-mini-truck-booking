@@ -10,6 +10,11 @@ function stringFromEnv(name: string, fallback: string) {
   return env?.[name] || fallback;
 }
 
+function publicOrServerStringFromEnv(serverName: string, publicName: string, fallback: string) {
+  const env = typeof process === "undefined" ? undefined : process.env;
+  return env?.[serverName] || env?.[publicName] || fallback;
+}
+
 function listFromEnv(name: string, fallback: string[]) {
   return stringFromEnv(name, fallback.join("|"))
     .split("|")
@@ -29,12 +34,13 @@ export const fareConfig = {
 };
 
 export const driverConfig = {
-  name: stringFromEnv("NEXT_PUBLIC_DRIVER_NAME", "EasyLoad Driver"),
-  phone: stringFromEnv("NEXT_PUBLIC_DRIVER_PHONE", "0567044691"),
-  location: stringFromEnv("NEXT_PUBLIC_DRIVER_LOCATION", "UAE"),
-  vehicle: stringFromEnv("NEXT_PUBLIC_DRIVER_VEHICLE", "Mini truck"),
-  hours: stringFromEnv("NEXT_PUBLIC_DRIVER_HOURS", "Available daily"),
-  whatsappNote: stringFromEnv(
+  name: publicOrServerStringFromEnv("DRIVER_NAME", "NEXT_PUBLIC_DRIVER_NAME", "EasyLoad Driver"),
+  phone: publicOrServerStringFromEnv("DRIVER_PHONE", "NEXT_PUBLIC_DRIVER_PHONE", "971500000000"),
+  location: publicOrServerStringFromEnv("DRIVER_LOCATION", "NEXT_PUBLIC_DRIVER_LOCATION", "UAE"),
+  vehicle: publicOrServerStringFromEnv("DRIVER_VEHICLE", "NEXT_PUBLIC_DRIVER_VEHICLE", "Mini truck"),
+  hours: publicOrServerStringFromEnv("DRIVER_HOURS", "NEXT_PUBLIC_DRIVER_HOURS", "Available daily"),
+  whatsappNote: publicOrServerStringFromEnv(
+    "DRIVER_WHATSAPP_NOTE",
     "NEXT_PUBLIC_DRIVER_WHATSAPP_NOTE",
     "WhatsApp is preferred for quick booking confirmation."
   )

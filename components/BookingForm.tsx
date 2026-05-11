@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Booking } from "@/lib/bookings/types";
-import { DRIVER_NAME, DRIVER_PHONE, phoneHref, whatsappHref } from "@/lib/driver";
+import { DriverContact, phoneHref, whatsappHref } from "@/lib/driver";
 import { formatDateTime, formatDistance, formatMoney, parseUaeDateTime, uaeDateTimeToIso, uaeInputDateTime } from "@/lib/format";
 
 type FormState = {
@@ -29,7 +29,13 @@ function getMinDateTime() {
   return uaeInputDateTime(new Date());
 }
 
-export function BookingForm({ locationSuggestions }: { locationSuggestions: string[] }) {
+export function BookingForm({
+  driver,
+  locationSuggestions
+}: {
+  driver: DriverContact;
+  locationSuggestions: string[];
+}) {
   const [form, setForm] = useState<FormState>(initialForm);
   const [booking, setBooking] = useState<Booking | null>(null);
   const [accessLink, setAccessLink] = useState("");
@@ -59,7 +65,7 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
     }
 
     return [
-      `Hello ${DRIVER_NAME}, I need a mini truck booking.`,
+      `Hello ${driver.name}, I need a mini truck booking.`,
       `Pickup: ${booking.pickup_location}`,
       `Drop: ${booking.drop_location}`,
       `Pickup time: ${formatDateTime(booking.pickup_time)}`,
@@ -71,7 +77,7 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
     ]
       .filter(Boolean)
       .join("\n");
-  }, [accessLink, booking]);
+  }, [accessLink, booking, driver.name]);
 
   useEffect(() => {
     if (!booking || !estimateRef.current) {
@@ -91,7 +97,7 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
       setRedirectTimer((prev) => {
         if (prev === null || prev <= 1) {
           // Auto-redirect to WhatsApp
-          window.open(whatsappHref(DRIVER_PHONE, whatsappMessage), "_blank");
+          window.open(whatsappHref(driver.phone, whatsappMessage), "_blank");
           return null;
         }
         return prev - 1;
@@ -99,7 +105,7 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [redirectTimer, whatsappMessage]);
+  }, [driver.phone, redirectTimer, whatsappMessage]);
 
   function cancelRedirect() {
     setRedirectTimer(null);
@@ -330,10 +336,10 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
               </div>
             )}
             <div className="actions">
-              <a className="button primary" href={phoneHref(DRIVER_PHONE)}>
+              <a className="button primary" href={phoneHref(driver.phone)}>
                 Call Driver
               </a>
-              <a className="button" href={whatsappHref(DRIVER_PHONE, whatsappMessage)} rel="noreferrer" target="_blank">
+              <a className="button" href={whatsappHref(driver.phone, whatsappMessage)} rel="noreferrer" target="_blank">
                 WhatsApp Driver
               </a>
             </div>

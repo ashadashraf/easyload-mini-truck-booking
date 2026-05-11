@@ -98,11 +98,11 @@ Open:
 Copy `.env.example` to `.env.local` and change the values for the real driver and fare rules:
 
 ```bash
-NEXT_PUBLIC_DRIVER_NAME="EasyLoad Driver"
-NEXT_PUBLIC_DRIVER_PHONE="971500000000"
-NEXT_PUBLIC_DRIVER_LOCATION="Dubai, UAE"
-NEXT_PUBLIC_DRIVER_VEHICLE="1 ton mini truck"
-NEXT_PUBLIC_DRIVER_HOURS="Available daily"
+DRIVER_NAME="EasyLoad Driver"
+DRIVER_PHONE="971500000000"
+DRIVER_LOCATION="Dubai, UAE"
+DRIVER_VEHICLE="1 ton mini truck"
+DRIVER_HOURS="Available daily"
 NEXT_PUBLIC_LOCATION_SUGGESTIONS="Dubai Marina|JLT Dubai|Downtown Dubai|Business Bay|Sharjah Industrial Area|Ajman Corniche"
 
 SUPABASE_URL="https://your-project-ref.supabase.co"

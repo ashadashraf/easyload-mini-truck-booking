@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Booking, BookingStatus } from "@/lib/bookings/types";
 import { getStatusOptions, isBackwardStatusChange, STATUS_LABELS } from "@/lib/bookings/status-flow";
-import { DRIVER_NAME, phoneHref, whatsappHref } from "@/lib/driver";
+import { DriverContact, phoneHref, whatsappHref } from "@/lib/driver";
 import { formatDateTime, formatDistance, formatMoney } from "@/lib/format";
 
 type Draft = {
@@ -12,7 +12,13 @@ type Draft = {
   notes: string;
 };
 
-export function DriverDashboard({ driverAccessToken }: { driverAccessToken: string }) {
+export function DriverDashboard({
+  driver,
+  driverAccessToken
+}: {
+  driver: DriverContact;
+  driverAccessToken: string;
+}) {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [drafts, setDrafts] = useState<Record<number, Draft>>({});
   const [error, setError] = useState("");
@@ -285,7 +291,7 @@ export function DriverDashboard({ driverAccessToken }: { driverAccessToken: stri
           const finalPriceIsRequired = booking.status === "booked" || statusOptions.includes("booked");
           const recordError = recordErrors[booking.id];
           const customerMessage = [
-            `Hello, this is ${DRIVER_NAME} about your mini truck booking.`,
+            `Hello, this is ${driver.name} about your mini truck booking.`,
             `Pickup: ${booking.pickup_location}`,
             `Drop: ${booking.drop_location}`,
             `Pickup time: ${formatDateTime(booking.pickup_time)}`,
