@@ -1,5 +1,7 @@
 import { fareConfig } from "./config";
 
+export const UAE_TIME_ZONE = "Asia/Dubai";
+
 export function formatMoney(value: number | null | undefined) {
   if (value === null || value === undefined) {
     return "Not set";
@@ -19,7 +21,8 @@ export function formatDateTime(value: string | null | undefined) {
 
   return new Intl.DateTimeFormat("en-AE", {
     dateStyle: "medium",
-    timeStyle: "short"
+    timeStyle: "short",
+    timeZone: UAE_TIME_ZONE
   }).format(new Date(value));
 }
 
@@ -41,3 +44,46 @@ export function localInputDateTime(value: string | null | undefined) {
   return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
 }
 
+export function uaeInputDateTime(value: string | Date | null | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false,
+    minute: "2-digit",
+    month: "2-digit",
+    timeZone: UAE_TIME_ZONE,
+    year: "numeric"
+  }).formatToParts(date);
+  const valueByType = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return `${valueByType.year}-${valueByType.month}-${valueByType.day}T${valueByType.hour}:${valueByType.minute}`;
+}
+
+export function parseUaeDateTime(value: string | null | undefined) {
+  if (!value) {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  const valueWithSeconds = trimmed.length === 16 ? `${trimmed}:00` : trimmed;
+  const hasTimeZone = /(?:z|[+-]\d{2}:?\d{2})$/i.test(valueWithSeconds);
+  const date = new Date(hasTimeZone ? valueWithSeconds : `${valueWithSeconds}+04:00`);
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+export function uaeDateTimeToIso(value: string) {
+  const date = parseUaeDateTime(value);
+
+  return date ? date.toISOString() : "";
+}

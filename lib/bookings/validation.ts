@@ -1,5 +1,6 @@
 import { BOOKING_STATUSES, BookingStatus, CreateBookingInput, UpdateBookingInput } from "./types";
 import { getStatusOptions } from "./status-flow";
+import { parseUaeDateTime } from "@/lib/format";
 
 export class ValidationError extends Error {
   constructor(message: string) {
@@ -79,13 +80,13 @@ function optionalString(value: unknown, field: string): string | null {
 
 function requiredDateString(value: unknown, field: string): string {
   const text = requiredString(value, field);
-  const timestamp = Date.parse(text);
+  const date = parseUaeDateTime(text);
 
-  if (Number.isNaN(timestamp)) {
+  if (!date) {
     throw new ValidationError(`${field} must be a valid date time.`);
   }
 
-  return new Date(timestamp).toISOString();
+  return date.toISOString();
 }
 
 function optionalDateString(value: unknown, field: string): string | null {

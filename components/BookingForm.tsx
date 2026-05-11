@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Booking } from "@/lib/bookings/types";
 import { DRIVER_NAME, DRIVER_PHONE, phoneHref, whatsappHref } from "@/lib/driver";
-import { formatDateTime, formatDistance, formatMoney, localInputDateTime } from "@/lib/format";
+import { formatDateTime, formatDistance, formatMoney, parseUaeDateTime, uaeDateTimeToIso, uaeInputDateTime } from "@/lib/format";
 
 type FormState = {
   pickup_location: string;
@@ -26,7 +26,7 @@ const initialForm: FormState = {
 };
 
 function getMinDateTime() {
-  return localInputDateTime(new Date().toISOString());
+  return uaeInputDateTime(new Date());
 }
 
 export function BookingForm({ locationSuggestions }: { locationSuggestions: string[] }) {
@@ -45,10 +45,10 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
       return;
     }
 
-    const pickupDate = new Date(form.pickup_time);
-    const dropDate = new Date(form.drop_time);
+    const pickupDate = parseUaeDateTime(form.pickup_time);
+    const dropDate = parseUaeDateTime(form.drop_time);
 
-    if (!Number.isNaN(pickupDate.getTime()) && !Number.isNaN(dropDate.getTime()) && dropDate < pickupDate) {
+    if (pickupDate && dropDate && dropDate < pickupDate) {
       setForm((current) => ({ ...current, drop_time: "" }));
     }
   }, [form.pickup_time, form.drop_time]);
@@ -110,17 +110,17 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
     setIsSubmitting(true);
 
     const now = new Date();
-    const pickupDate = new Date(form.pickup_time);
+    const pickupDate = parseUaeDateTime(form.pickup_time);
 
     // Allow pickup times that are not more than 5 minutes in the past (for timing differences)
-    if (!form.pickup_time || Number.isNaN(pickupDate.getTime()) || pickupDate.getTime() < now.getTime() - 300000) {
+    if (!pickupDate || pickupDate.getTime() < now.getTime() - 300000) {
       throw new Error("Pickup time must be set to a future date.");
     }
 
     if (form.drop_time) {
-      const dropDate = new Date(form.drop_time);
+      const dropDate = parseUaeDateTime(form.drop_time);
 
-      if (Number.isNaN(dropDate.getTime())) {
+      if (!dropDate) {
         throw new Error("Drop time must be a valid date.");
       }
 
@@ -136,8 +136,8 @@ export function BookingForm({ locationSuggestions }: { locationSuggestions: stri
     const payload = {
       pickup_location: form.pickup_location,
       drop_location: form.drop_location,
-      pickup_time: form.pickup_time,
-      drop_time: form.drop_time || null,
+      pickup_time: uaeDateTimeToIso(form.pickup_time),
+      drop_time: form.drop_time ? uaeDateTimeToIso(form.drop_time) : null,
       phone_number: form.phone_number,
       expected_price: form.expected_price || null,
       need_helper: form.need_helper
