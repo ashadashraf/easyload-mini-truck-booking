@@ -3,7 +3,10 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const driverAuthEmail = process.env.DRIVER_AUTH_EMAIL?.toLowerCase();
+const driverAuthEmails =
+  process.env.DRIVER_AUTH_EMAIL
+    ?.split(",")
+    .map((email) => email.trim().toLowerCase()) || [];
 
 export async function requireDriver(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -27,8 +30,16 @@ export async function requireDriver(request: NextRequest) {
     return NextResponse.json({ error: "Driver login required." }, { status: 401 });
   }
 
-  if (driverAuthEmail && data.user.email?.toLowerCase() !== driverAuthEmail) {
-    return NextResponse.json({ error: "This account is not allowed to access the driver dashboard." }, { status: 403 });
+  const userEmail = data.user.email?.toLowerCase();
+
+  if (
+    driverAuthEmails.length > 0 &&
+    (!userEmail || !driverAuthEmails.includes(userEmail))
+  ) {
+    return NextResponse.json(
+      { error: "This account is not allowed to access the driver dashboard." },
+      { status: 403 }
+    );
   }
 
   return null;
