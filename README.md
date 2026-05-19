@@ -1,4 +1,4 @@
-# EasyLoad Mini Truck Booking
+# PickUpDXB Mini Truck Booking
 
 Minimal logistics booking system for a single mini truck driver in UAE.
 
@@ -98,7 +98,7 @@ Open:
 Copy `.env.example` to `.env.local` and change the values for the real driver and fare rules:
 
 ```bash
-DRIVER_NAME="EasyLoad Driver"
+DRIVER_NAME="PickUpDXB Driver"
 DRIVER_PHONE="971500000000"
 DRIVER_LOCATION="Dubai, UAE"
 DRIVER_VEHICLE="1 ton mini truck"

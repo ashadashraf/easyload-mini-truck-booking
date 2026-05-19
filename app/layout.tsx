@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "EasyLoad Mini Truck Booking",
+  title: "PickUpDXB Mini Truck Booking",
   description: "Simple logistics booking and driver dashboard for UAE mini truck jobs."
 };
 

@@ -34,7 +34,7 @@ export const fareConfig = {
 };
 
 export const driverConfig = {
-  name: publicOrServerStringFromEnv("DRIVER_NAME", "NEXT_PUBLIC_DRIVER_NAME", "EasyLoad Driver"),
+  name: publicOrServerStringFromEnv("DRIVER_NAME", "NEXT_PUBLIC_DRIVER_NAME", "PickUpDXB Driver"),
   phone: publicOrServerStringFromEnv("DRIVER_PHONE", "NEXT_PUBLIC_DRIVER_PHONE", "971500000000"),
   location: publicOrServerStringFromEnv("DRIVER_LOCATION", "NEXT_PUBLIC_DRIVER_LOCATION", "UAE"),
   vehicle: publicOrServerStringFromEnv("DRIVER_VEHICLE", "NEXT_PUBLIC_DRIVER_VEHICLE", "Mini truck"),

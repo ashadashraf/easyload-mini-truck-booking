@@ -8,7 +8,7 @@ export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("easyload-theme") as Theme | null;
+    const saved = window.localStorage.getItem("pickupdxb-theme") as Theme | null;
     const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     const nextTheme = saved === "dark" || saved === "light" ? saved : preferred;
     setTheme(nextTheme);
@@ -19,7 +19,7 @@ export function ThemeToggle() {
     const nextTheme = theme === "light" ? "dark" : "light";
     setTheme(nextTheme);
     document.documentElement.dataset.theme = nextTheme;
-    window.localStorage.setItem("easyload-theme", nextTheme);
+    window.localStorage.setItem("pickupdxb-theme", nextTheme);
   }
 
   return (
