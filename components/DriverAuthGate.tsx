@@ -68,7 +68,7 @@ export function DriverAuthGate({ driver }: { driver: DriverContact }) {
   if (isLoading) {
     return (
       <>
-        <AppHeader />
+        <AppHeader brandHref="/driver" />
         <section className="panel"><p className="muted">Checking driver session...</p></section>
       </>
     );
@@ -77,7 +77,7 @@ export function DriverAuthGate({ driver }: { driver: DriverContact }) {
   if (!session) {
     return (
       <>
-        <AppHeader />
+        <AppHeader brandHref="/driver" />
         <section className="panel auth-panel">
           <div className="section-title">
             <span className="eyebrow">Driver login</span>
@@ -128,7 +128,7 @@ export function DriverAuthGate({ driver }: { driver: DriverContact }) {
 
   return (
     <>
-      <AppHeader onLogout={logout} userEmail={session.user.email} />
+      <AppHeader brandHref="/driver" onLogout={logout} userEmail={session.user.email} />
       <DriverDashboard driver={driver} driverAccessToken={session.access_token} />
     </>
   );

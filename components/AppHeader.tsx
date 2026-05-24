@@ -6,11 +6,13 @@ import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 
 type AppHeaderProps = {
+  brandHref?: string;
   onLogout?: () => void;
+  showDriverLink?: boolean;
   userEmail?: string;
 };
 
-export function AppHeader({ onLogout, userEmail }: AppHeaderProps) {
+export function AppHeader({ brandHref = "/", onLogout, showDriverLink = false, userEmail }: AppHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDetailsElement | null>(null);
 
@@ -46,7 +48,7 @@ export function AppHeader({ onLogout, userEmail }: AppHeaderProps) {
 
   return (
     <header className="topbar">
-      <Link className="brand" href="/">
+      <Link className="brand" href={brandHref}>
         <div className="brand-container">
           <Image
             src="/PickUpDxbLogo.png"
@@ -69,9 +71,11 @@ export function AppHeader({ onLogout, userEmail }: AppHeaderProps) {
       <nav className="nav" aria-label="Primary navigation">
         <Link href="/">Book</Link>
 
-        <Link href="/driver">
-          Driver
-        </Link>
+        {showDriverLink ? (
+          <Link href="/driver">
+            Driver
+          </Link>
+        ) : null}
 
         <a href="#support">Support</a>
 
@@ -102,7 +106,7 @@ export function AppHeader({ onLogout, userEmail }: AppHeaderProps) {
         </summary>
         <nav className="mobile-menu-panel" aria-label="Mobile navigation">
           <Link href="/" onClick={closeMobileMenu}>Book</Link>
-          <Link href="/driver" onClick={closeMobileMenu}>Driver</Link>
+          {showDriverLink ? <Link href="/driver" onClick={closeMobileMenu}>Driver</Link> : null}
           <a href="#support" onClick={closeMobileMenu}>Support</a>
           <ThemeToggle />
           {userEmail && onLogout && (
