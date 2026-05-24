@@ -1083,17 +1083,6 @@ textarea {
   grid-column: 1 / -1;
 }
 
-.driver-alert-hint {
-  background: rgba(246, 180, 67, 0.14);
-  border: 1px solid rgba(154, 91, 0, 0.24);
-  border-radius: 12px;
-  color: var(--warning);
-  font-size: 13px;
-  font-weight: 700;
-  grid-column: 1 / -1;
-  padding: 10px 12px;
-}
-
 .driver-alert-actions {
   display: flex;
   flex-wrap: wrap;

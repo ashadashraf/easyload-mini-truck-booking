@@ -8,7 +8,6 @@ const SERVICE_WORKER_READY_TIMEOUT_MS = 5000;
 export function DriverPushNotifications({ driverAccessToken }: { driverAccessToken: string }) {
   const [error, setError] = useState("");
   const [isBusy, setIsBusy] = useState(false);
-  const [isInstalledPwa, setIsInstalledPwa] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
@@ -29,11 +28,10 @@ export function DriverPushNotifications({ driverAccessToken }: { driverAccessTok
 
       if (isMounted) {
         setPermission(Notification.permission);
-        setIsInstalledPwa(isRunningAsInstalledPwa());
       }
 
       try {
-        const registration = await getReadyServiceWorkerRegistration();
+        const registration = await getReadyServiceWorker();
         const subscription = await registration.pushManager.getSubscription();
 
         if (isMounted) {
@@ -82,7 +80,7 @@ export function DriverPushNotifications({ driverAccessToken }: { driverAccessTok
         throw new Error("Notification permission was not allowed for this device.");
       }
 
-      const registration = await getReadyServiceWorkerRegistration();
+      const registration = await getReadyServiceWorker();
       const existingSubscription = await registration.pushManager.getSubscription();
       const subscription =
         existingSubscription ||
@@ -120,7 +118,7 @@ export function DriverPushNotifications({ driverAccessToken }: { driverAccessTok
     setIsBusy(true);
 
     try {
-      const registration = await getReadyServiceWorkerRegistration();
+      const registration = await getReadyServiceWorker();
       const subscription = await registration.pushManager.getSubscription();
 
       if (subscription) {
@@ -183,7 +181,9 @@ export function DriverPushNotifications({ driverAccessToken }: { driverAccessTok
           {isSubscribed ? "Alerts on" : "Alerts off"}
         </span>
         <h3>New booking alerts</h3>
-        <p>Get a PWA notification on this device whenever a customer creates a booking.</p>
+        <p>
+          Get a PWA notification on this device whenever a customer creates a booking.
+        </p>
       </div>
 
       {!isSupported ? (
@@ -194,11 +194,6 @@ export function DriverPushNotifications({ driverAccessToken }: { driverAccessTok
       ) : null}
       {error ? <p className="error">{error}</p> : null}
       {message ? <p className="success">{message}</p> : null}
-      {!isInstalledPwa ? (
-        <p className="driver-alert-hint">
-          For closed-app alerts on mobile, install PickUp DXB and open it from the home screen.
-        </p>
-      ) : null}
 
       <div className="driver-alert-actions">
         {isSubscribed ? (
@@ -227,9 +222,7 @@ function supportsPushNotifications() {
   );
 }
 
-async function getReadyServiceWorkerRegistration() {
-  await ensureServiceWorkerRegistration();
-
+async function getReadyServiceWorker() {
   return Promise.race([
     navigator.serviceWorker.ready,
     new Promise<ServiceWorkerRegistration>((_resolve, reject) => {
@@ -238,27 +231,6 @@ async function getReadyServiceWorkerRegistration() {
       }, SERVICE_WORKER_READY_TIMEOUT_MS);
     })
   ]);
-}
-
-async function ensureServiceWorkerRegistration() {
-  const existingRegistration = await navigator.serviceWorker.getRegistration("/");
-
-  if (existingRegistration) {
-    await existingRegistration.update().catch(() => undefined);
-    return existingRegistration;
-  }
-
-  return navigator.serviceWorker.register("/sw.js", { scope: "/" });
-}
-
-function isRunningAsInstalledPwa() {
-  const navigatorWithStandalone = navigator as Navigator & { standalone?: boolean };
-
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    window.matchMedia("(display-mode: fullscreen)").matches ||
-    navigatorWithStandalone.standalone === true
-  );
 }
 
 function urlBase64ToUint8Array(base64String: string) {
