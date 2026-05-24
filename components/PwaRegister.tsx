@@ -8,9 +8,12 @@ export function PwaRegister() {
       return;
     }
 
-    navigator.serviceWorker.register("/sw.js").catch((error) => {
-      console.error("PWA service worker registration failed.", error);
-    });
+    navigator.serviceWorker
+      .register("/sw.js", { scope: "/" })
+      .then((registration) => registration.update())
+      .catch((error) => {
+        console.error("PWA service worker registration failed.", error);
+      });
   }, []);
 
   return null;
