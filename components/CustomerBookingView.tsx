@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Booking } from "@/lib/bookings/types";
+import { CustomerBooking } from "@/lib/bookings/types";
 import { DriverContact, phoneHref, whatsappHref } from "@/lib/driver";
 import { formatDateTime, formatDistance, formatMoney } from "@/lib/format";
 
 export function CustomerBookingView({ driver, token }: { driver: DriverContact; token: string }) {
-  const [booking, setBooking] = useState<Booking | null>(null);
+  const [booking, setBooking] = useState<CustomerBooking | null>(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -46,7 +46,8 @@ export function CustomerBookingView({ driver, token }: { driver: DriverContact; 
     `Pickup time: ${formatDateTime(booking.pickup_time)}`,
     `Status: ${booking.status}`,
     booking.need_helper ? "Helper needed for loading/unloading: Yes" : null,
-    booking.helper_charge ? `Helper charge: ${formatMoney(booking.helper_charge)} (not included in ride final price)` : null
+    booking.helper_charge ? `Helper charge: ${formatMoney(booking.helper_charge)} (not included in ride final price)` : null,
+    booking.customer_notes ? `Customer notes: ${booking.customer_notes}` : null
   ].filter(Boolean).join("\n");
 
   return (
@@ -68,18 +69,18 @@ export function CustomerBookingView({ driver, token }: { driver: DriverContact; 
         <div className="route-display">
           <div className="route-path">
             <span className="route-location">{booking.pickup_location}</span>
-            <span className="route-arrow" aria-hidden="true">→</span>
+            <span className="route-arrow" aria-hidden="true">to</span>
             <span className="route-location">{booking.drop_location}</span>
           </div>
           <div className="route-details">
             <div className="route-times">
               <span>
-                <strong>Pickup time </strong>
+                <strong>Pickup time <br /></strong>
                 {formatDateTime(booking.pickup_time)}
               </span>
               {booking.drop_time && (
                 <span>
-                  <strong>Drop time</strong>
+                  <strong>Drop time <br /></strong>
                   {formatDateTime(booking.drop_time)}
                 </span>
               )}
@@ -106,7 +107,7 @@ export function CustomerBookingView({ driver, token }: { driver: DriverContact; 
           )}
           {booking.need_helper && (
             <div className="price-item">
-              <span className="price-label">Helper Charge</span>
+              <span className="price-label">Helper Charge (separate)</span>
               <span className="price-value">{formatMoney(booking.helper_charge)}</span>
             </div>
           )}
@@ -122,27 +123,27 @@ export function CustomerBookingView({ driver, token }: { driver: DriverContact; 
         <div className="booking-meta">
           <span className="meta-item">
             Distance: {formatDistance(booking.estimated_distance_km)}
-            {booking.estimated_duration_minutes && ` · ~${booking.estimated_duration_minutes} min`}
+            {booking.estimated_duration_minutes && ` - ~${booking.estimated_duration_minutes} min`}
           </span>
           <span className="meta-item">
             Created: {formatDateTime(booking.created_at)}
           </span>
         </div>
 
-        {booking.notes && (
+        {booking.customer_notes && (
           <div className="customer-notes">
-            <span className="notes-label">Driver notes</span>
-            <p>{booking.notes}</p>
+            <span className="notes-label">Customer notes</span>
+            <p>{booking.customer_notes}</p>
           </div>
         )}
 
         <div className="contact-actions">
           <div className="action-buttons">
             <a className="button primary" href={phoneHref(driver.phone)}>
-              📞 Call Driver
+              Call Driver
             </a>
             <a className="button" href={whatsappHref(driver.phone, message)} rel="noreferrer" target="_blank">
-              💬 WhatsApp Driver
+              WhatsApp Driver
             </a>
           </div>
         </div>

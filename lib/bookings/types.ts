@@ -19,10 +19,13 @@ export type Booking = {
   need_helper: boolean;
   helper_charge: number | null;
   status: BookingStatus;
-  notes: string | null;
+  customer_notes: string | null;
+  driver_notes: string | null;
   created_at: string;
   updated_at: string;
 };
+
+export type CustomerBooking = Omit<Booking, "access_token" | "phone_number" | "estimate_source" | "driver_notes">;
 
 export type CreateBookingInput = {
   pickup_location: string;
@@ -32,11 +35,12 @@ export type CreateBookingInput = {
   phone_number: string;
   expected_price?: number | null;
   need_helper?: boolean;
+  customer_notes?: string | null;
 };
 
 export type UpdateBookingInput = {
   status?: BookingStatus;
   final_price?: number | null;
   helper_charge?: number | null;
-  notes?: string | null;
+  driver_notes?: string | null;
 };

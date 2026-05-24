@@ -5,10 +5,10 @@ export function AppFooter() {
   const message = `Hello ${driverConfig.name}, I want to ask about mini truck availability.`;
 
   return (
-    <footer className="footer">
+    <footer className="footer" id="support">
       <div>
         <strong>{driverConfig.name}</strong>
-        <p>{driverConfig.vehicle} · {driverConfig.location}</p>
+        <p>{driverConfig.vehicle} - {driverConfig.location}</p>
         <p>{driverConfig.hours}</p>
         <p>{driverConfig.whatsappNote}</p>
       </div>

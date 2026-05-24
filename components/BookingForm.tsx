@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { Booking } from "@/lib/bookings/types";
+import { CustomerBooking } from "@/lib/bookings/types";
 import { DriverContact, phoneHref, whatsappHref } from "@/lib/driver";
 import { formatDateTime, formatDistance, formatMoney, parseUaeDateTime, uaeDateTimeToIso, uaeInputDateTime } from "@/lib/format";
 
@@ -13,6 +13,7 @@ type FormState = {
   phone_number: string;
   expected_price: string;
   need_helper: boolean;
+  customer_notes: string;
 };
 
 const initialForm: FormState = {
@@ -22,7 +23,8 @@ const initialForm: FormState = {
   drop_time: "",
   phone_number: "",
   expected_price: "",
-  need_helper: false
+  need_helper: false,
+  customer_notes: ""
 };
 
 function getMinDateTime() {
@@ -31,13 +33,15 @@ function getMinDateTime() {
 
 export function BookingForm({
   driver,
-  locationSuggestions
+  locationSuggestions,
+  onBookingCreated
 }: {
   driver: DriverContact;
   locationSuggestions: string[];
+  onBookingCreated?: (booking: CustomerBooking, accessLink: string) => void;
 }) {
   const [form, setForm] = useState<FormState>(initialForm);
-  const [booking, setBooking] = useState<Booking | null>(null);
+  const [booking, setBooking] = useState<CustomerBooking | null>(null);
   const [accessLink, setAccessLink] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,6 +77,7 @@ export function BookingForm({
       `Estimated price: ${formatMoney(booking.estimated_price)}`,
       booking.expected_price ? `Expected price: ${formatMoney(booking.expected_price)}` : null,
       booking.need_helper ? "Helper needed for loading/unloading: Yes" : null,
+      booking.customer_notes ? `Customer notes: ${booking.customer_notes}` : null,
       accessLink ? `Private booking link: ${accessLink}` : null
     ]
       .filter(Boolean)
@@ -116,41 +121,42 @@ export function BookingForm({
     setError("");
     setIsSubmitting(true);
 
-    const now = new Date();
-    const pickupDate = parseUaeDateTime(form.pickup_time);
-
-    // Allow pickup times that are not more than 5 minutes in the past (for timing differences)
-    if (!pickupDate || pickupDate.getTime() < now.getTime() - 300000) {
-      throw new Error("Pickup time must be set to a future date.");
-    }
-
-    if (form.drop_time) {
-      const dropDate = parseUaeDateTime(form.drop_time);
-
-      if (!dropDate) {
-        throw new Error("Drop time must be a valid date.");
-      }
-
-      if (dropDate.getTime() < now.getTime() - 300000) {
-        throw new Error("Drop time must be set to a future date.");
-      }
-
-      if (dropDate < pickupDate) {
-        throw new Error("Drop time cannot be before pickup time.");
-      }
-    }
-
-    const payload = {
-      pickup_location: form.pickup_location,
-      drop_location: form.drop_location,
-      pickup_time: uaeDateTimeToIso(form.pickup_time),
-      drop_time: form.drop_time ? uaeDateTimeToIso(form.drop_time) : null,
-      phone_number: form.phone_number,
-      expected_price: form.expected_price || null,
-      need_helper: form.need_helper
-    };
-
     try {
+      const now = new Date();
+      const pickupDate = parseUaeDateTime(form.pickup_time);
+
+      // Allow pickup times that are not more than 5 minutes in the past (for timing differences)
+      if (!pickupDate || pickupDate.getTime() < now.getTime() - 300000) {
+        throw new Error("Pickup time must be set to a future date.");
+      }
+
+      if (form.drop_time) {
+        const dropDate = parseUaeDateTime(form.drop_time);
+
+        if (!dropDate) {
+          throw new Error("Drop time must be a valid date.");
+        }
+
+        if (dropDate.getTime() < now.getTime() - 300000) {
+          throw new Error("Drop time must be set to a future date.");
+        }
+
+        if (dropDate < pickupDate) {
+          throw new Error("Drop time cannot be before pickup time.");
+        }
+      }
+
+      const payload = {
+        pickup_location: form.pickup_location,
+        drop_location: form.drop_location,
+        pickup_time: uaeDateTimeToIso(form.pickup_time),
+        drop_time: form.drop_time ? uaeDateTimeToIso(form.drop_time) : null,
+        phone_number: form.phone_number,
+        expected_price: form.expected_price || null,
+        need_helper: form.need_helper,
+        customer_notes: form.customer_notes || null
+      };
+
       const response = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -164,6 +170,7 @@ export function BookingForm({
 
       setBooking(data.booking);
       setAccessLink(data.access_link || "");
+      onBookingCreated?.(data.booking, data.access_link || "");
       setForm(initialForm);
       // Start auto-redirect timer (5 seconds)
       setRedirectTimer(10);
@@ -176,11 +183,24 @@ export function BookingForm({
 
   return (
     <div className="grid">
-      <section className="panel">
+      <section className="panel booking-panel">
+        <div className="booking-steps" aria-label="Booking steps">
+          <span className="active">Location</span>
+          <span>Details</span>
+          <span>Confirm</span>
+        </div>
         <div className="section-title">
           <span className="eyebrow">Fast request</span>
-          <h2>Book a mini truck</h2>
-          <p className="muted">Share the route and preferred time. You will get an estimate, then confirm directly with the driver.</p>
+          <h2>Book your 1 ton pickup</h2>
+          <p className="muted">Enter the route, timing, and items. We will save the booking and show your estimate.</p>
+        </div>
+        <div className="vehicle-option-card" aria-label="Selected vehicle">
+          <div className="vehicle-visual" aria-hidden="true">1T</div>
+          <div>
+            <strong>1 ton pickup</strong>
+            <span>Best for shifting, delivery, furniture, boxes, and shop items.</span>
+          </div>
+          <span className="selected-pill">Selected</span>
         </div>
         <form onSubmit={submitBooking}>
           <datalist id="uae-location-suggestions">
@@ -199,7 +219,7 @@ export function BookingForm({
             />
             <Field
               list="uae-location-suggestions"
-              label="Drop location"
+              label="Drop-off location"
               name="drop_location"
               placeholder="Example: Sharjah Industrial Area"
               value={form.drop_location}
@@ -214,7 +234,7 @@ export function BookingForm({
               onChange={(value) => setForm({ ...form, pickup_time: value })}
             />
             <Field
-              label="Drop time"
+              label="Drop-off time"
               name="drop_time"
               type="datetime-local"
               min={dropMinDateTime}
@@ -223,7 +243,7 @@ export function BookingForm({
               onChange={(value) => setForm({ ...form, drop_time: value })}
             />
             <Field
-              label="Phone number"
+              label="Contact number"
               name="phone_number"
               placeholder="Example: 971501234567"
               type="tel"
@@ -234,10 +254,10 @@ export function BookingForm({
               label="Expected price (optional)"
               name="expected_price"
               placeholder="AED"
-              type="number"
+              inputMode="decimal"
               required={false}
               value={form.expected_price}
-              onChange={(value) => setForm({ ...form, expected_price: value })}
+              onChange={(value) => setForm({ ...form, expected_price: cleanMoneyInput(value) })}
             />
             <div className="field check-field">
               <label htmlFor="need_helper">
@@ -255,30 +275,44 @@ export function BookingForm({
                   Helper charge is not included in the ride final price. It may vary based on hours and work intensity,
                   and the helper will confirm the amount.
                 </p>
-              ) : null}
+              ) : (
+                <p className="helper-note">Turn this on if items are heavy, bulky, or need carrying upstairs.</p>
+              )}
             </div>
+            <TextArea
+              label="Notes / items description"
+              name="customer_notes"
+              placeholder="Example: 2 sofas, boxes, washing machine, lift available"
+              required={false}
+              value={form.customer_notes}
+              onChange={(value) => setForm({ ...form, customer_notes: value })}
+            />
           </div>
           {error ? <p className="error">{error}</p> : null}
           <div className="actions">
             <button className="primary" disabled={isSubmitting} type="submit">
-              {isSubmitting ? "Saving..." : "Submit booking"}
+              {isSubmitting ? "Saving booking..." : "Book Now"}
             </button>
+            <p className="form-microcopy">Available across UAE. You will receive a private booking detail link after submitting.</p>
           </div>
         </form>
       </section>
 
-      <aside className="panel" ref={estimateRef} tabIndex={-1}>
+      <aside className="panel estimate-panel" ref={estimateRef} tabIndex={-1}>
         <div className="section-title compact">
           <span className="eyebrow">Price view</span>
-          <h3>Estimated fare</h3>
+          <h3>Estimated price</h3>
         </div>
         {booking ? (
           <div className="estimate-box">
-            <span className="price">{formatMoney(booking.estimated_price)}</span>
+            <div className="estimate-amount">
+              <span className="price-label">Estimated price</span>
+              <span className="price">{formatMoney(booking.estimated_price)}</span>
+            </div>
             <div className="confirmation-route">
               <div className="route-path">
                 <span className="route-location">{booking.pickup_location}</span>
-                <span className="route-arrow" aria-hidden="true">→</span>
+                <span className="route-arrow" aria-hidden="true">to</span>
                 <span className="route-location">{booking.drop_location}</span>
               </div>
               <div className="route-times">
@@ -306,7 +340,7 @@ export function BookingForm({
             </div>
             <span className="muted">
               Distance: {formatDistance(booking.estimated_distance_km)}
-              {booking.estimated_duration_minutes ? ` · Around ${booking.estimated_duration_minutes} min` : ""}
+              {booking.estimated_duration_minutes ? ` - Around ${booking.estimated_duration_minutes} min` : ""}
             </span>
             <span className={`status ${booking.status}`}>{booking.status}</span>
             <p className="muted">
@@ -321,7 +355,7 @@ export function BookingForm({
             {redirectTimer !== null && (
               <div className="redirect-notice">
                 <div className="redirect-header">
-                  <span className="redirect-icon">📱</span>
+                  <span className="redirect-icon" aria-hidden="true">WA</span>
                   <span className="redirect-text">
                     Auto-redirecting to WhatsApp in <strong>{redirectTimer}</strong> seconds
                   </span>
@@ -368,7 +402,8 @@ function Field({
   required = true,
   placeholder,
   list,
-  min
+  min,
+  inputMode
 }: {
   label: string;
   name: string;
@@ -379,20 +414,59 @@ function Field({
   placeholder?: string;
   list?: string;
   min?: string;
+  inputMode?: "decimal" | "numeric" | "tel" | "text";
 }) {
   return (
     <div className="field">
       <label htmlFor={name}>{label}</label>
       <input
         id={name}
+        inputMode={inputMode}
         list={list}
         min={type === "number" ? "0" : min}
         name={name}
         onChange={(event) => onChange(event.target.value)}
+        onWheel={type === "number" ? (event) => event.currentTarget.blur() : undefined}
         placeholder={placeholder}
         required={required}
         step={type === "number" ? "0.01" : undefined}
         type={type}
+        value={value}
+      />
+    </div>
+  );
+}
+
+function cleanMoneyInput(value: string) {
+  const cleaned = value.replace(/[^\d.]/g, "");
+  const [whole, ...decimals] = cleaned.split(".");
+  return decimals.length ? `${whole}.${decimals.join("").slice(0, 2)}` : whole;
+}
+
+function TextArea({
+  label,
+  name,
+  value,
+  onChange,
+  required = true,
+  placeholder
+}: {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (value: string) => void;
+  required?: boolean;
+  placeholder?: string;
+}) {
+  return (
+    <div className="field full-span">
+      <label htmlFor={name}>{label}</label>
+      <textarea
+        id={name}
+        name={name}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        required={required}
         value={value}
       />
     </div>

@@ -7,6 +7,7 @@ const driverAuthEmails =
   process.env.DRIVER_AUTH_EMAIL
     ?.split(",")
     .map((email) => email.trim().toLowerCase()) || [];
+const isProduction = process.env.NODE_ENV === "production";
 
 export async function requireDriver(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -14,6 +15,10 @@ export async function requireDriver(request: NextRequest) {
 
   if (!token || !supabaseUrl || !supabaseAnonKey) {
     return NextResponse.json({ error: "Driver login required." }, { status: 401 });
+  }
+
+  if (isProduction && driverAuthEmails.length === 0) {
+    return NextResponse.json({ error: "Driver access is not configured." }, { status: 500 });
   }
 
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {

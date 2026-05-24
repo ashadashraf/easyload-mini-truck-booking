@@ -2,6 +2,10 @@ import { BOOKING_STATUSES, BookingStatus, CreateBookingInput, UpdateBookingInput
 import { getStatusOptions } from "./status-flow";
 import { parseUaeDateTime } from "@/lib/format";
 
+const LOCATION_MAX_LENGTH = 160;
+const PHONE_MAX_LENGTH = 32;
+const NOTES_MAX_LENGTH = 1000;
+
 export class ValidationError extends Error {
   constructor(message: string) {
     super(message);
@@ -11,13 +15,14 @@ export class ValidationError extends Error {
 
 export function parseCreateBookingInput(body: unknown): CreateBookingInput {
   const data = asRecord(body);
-  const pickupLocation = requiredString(data.pickup_location, "pickup_location");
-  const dropLocation = requiredString(data.drop_location, "drop_location");
+  const pickupLocation = requiredString(data.pickup_location, "pickup_location", LOCATION_MAX_LENGTH);
+  const dropLocation = requiredString(data.drop_location, "drop_location", LOCATION_MAX_LENGTH);
   const pickupTime = requiredDateString(data.pickup_time, "pickup_time");
   const dropTime = optionalDateString(data.drop_time, "drop_time");
-  const phoneNumber = requiredString(data.phone_number, "phone_number");
+  const phoneNumber = requiredString(data.phone_number, "phone_number", PHONE_MAX_LENGTH);
   const expectedPrice = optionalMoney(data.expected_price, "expected_price");
   const needHelper = optionalBoolean(data.need_helper, "need_helper") ?? false;
+  const customerNotes = optionalString(data.customer_notes, "customer_notes", NOTES_MAX_LENGTH);
 
   return {
     pickup_location: pickupLocation,
@@ -26,7 +31,8 @@ export function parseCreateBookingInput(body: unknown): CreateBookingInput {
     drop_time: dropTime,
     phone_number: phoneNumber,
     expected_price: expectedPrice,
-    need_helper: needHelper
+    need_helper: needHelper,
+    customer_notes: customerNotes
   };
 }
 
@@ -35,13 +41,16 @@ export function parseUpdateBookingInput(body: unknown): UpdateBookingInput {
   const status = data.status === undefined ? undefined : parseStatus(data.status);
   const finalPrice = data.final_price === undefined ? undefined : optionalMoney(data.final_price, "final_price");
   const helperCharge = data.helper_charge === undefined ? undefined : optionalMoney(data.helper_charge, "helper_charge");
-  const notes = data.notes === undefined ? undefined : optionalString(data.notes, "notes");
+  const driverNotes =
+    data.driver_notes === undefined
+      ? undefined
+      : optionalString(data.driver_notes, "driver_notes", NOTES_MAX_LENGTH);
 
   if (status === "booked" && (finalPrice === undefined || finalPrice === null)) {
     throw new ValidationError("final_price is required when status is booked.");
   }
 
-  return { status, final_price: finalPrice, helper_charge: helperCharge, notes };
+  return { status, final_price: finalPrice, helper_charge: helperCharge, driver_notes: driverNotes };
 }
 
 export function validateStatusTransition(currentStatus: BookingStatus, nextStatus: BookingStatus) {
@@ -58,16 +67,16 @@ function asRecord(body: unknown): Record<string, unknown> {
   return body as Record<string, unknown>;
 }
 
-function requiredString(value: unknown, field: string): string {
+function requiredString(value: unknown, field: string, maxLength?: number): string {
   if (typeof value !== "string" || value.trim().length === 0) {
     throw new ValidationError(`${field} is required.`);
   }
 
-  return value.trim();
+  return validateLength(value.trim(), field, maxLength);
 }
 
-function optionalString(value: unknown, field: string): string | null {
-  if (value === null || value === "") {
+function optionalString(value: unknown, field: string, maxLength?: number): string | null {
+  if (value === undefined || value === null || value === "") {
     return null;
   }
 
@@ -75,7 +84,9 @@ function optionalString(value: unknown, field: string): string | null {
     throw new ValidationError(`${field} must be text.`);
   }
 
-  return value.trim() || null;
+  const trimmed = value.trim();
+
+  return trimmed ? validateLength(trimmed, field, maxLength) : null;
 }
 
 function requiredDateString(value: unknown, field: string): string {
@@ -129,4 +140,12 @@ function parseStatus(value: unknown): BookingStatus {
   }
 
   return value as BookingStatus;
+}
+
+function validateLength(value: string, field: string, maxLength?: number) {
+  if (maxLength && value.length > maxLength) {
+    throw new ValidationError(`${field} must be ${maxLength} characters or fewer.`);
+  }
+
+  return value;
 }

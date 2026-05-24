@@ -19,17 +19,18 @@ create table if not exists public.bookings (
   helper_charge numeric(10, 2),
   status text not null default 'pending'
     check (status in ('pending', 'contacted', 'booked', 'completed', 'rejected')),
-  notes text,
+  customer_notes text,
+  driver_notes text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint booked_requires_final_price check (status <> 'booked' or final_price is not null)
 );
 
 alter table public.bookings
-  add column if not exists need_helper boolean not null default false;
+  add column if not exists customer_notes text;
 
 alter table public.bookings
-  add column if not exists helper_charge numeric(10, 2);
+  add column if not exists driver_notes text;
 
 update public.bookings
 set access_token = gen_random_uuid()::text || '-' || gen_random_uuid()::text

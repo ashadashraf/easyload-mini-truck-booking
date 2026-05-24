@@ -9,7 +9,7 @@ import { formatDateTime, formatDistance, formatMoney } from "@/lib/format";
 type Draft = {
   final_price: string;
   helper_charge: string;
-  notes: string;
+  driver_notes: string;
 };
 
 export function DriverDashboard({
@@ -53,7 +53,8 @@ export function DriverDashboard({
         distanceLabel: "Distance",
         estimateSource: "Estimate source",
         finalPriceLabel: "Final price",
-        notesLabel: "Notes",
+        customerNotesLabel: "Customer notes",
+        driverNotesLabel: "Driver notes",
         notSetLabel: "Not set",
         call: "Call",
         whatsapp: "WhatsApp",
@@ -86,7 +87,8 @@ export function DriverDashboard({
         distanceLabel: "ദൂരം",
         estimateSource: "അനുമാന ഉറവ",
         finalPriceLabel: "അവസാന വില",
-        notesLabel: "കുറിപ്പുകൾ",
+        customerNotesLabel: "Customer notes",
+        driverNotesLabel: "Driver notes",
         notSetLabel: "സജ്ജമാക്കിയിട്ടില്ല",
         call: "ഫോൺ ചെയ്യുക",
         whatsapp: "വാട്ട്‌സ്ആപ്പ്",
@@ -148,7 +150,7 @@ export function DriverDashboard({
             {
               final_price: booking.final_price?.toString() ?? "",
               helper_charge: booking.helper_charge?.toString() ?? "",
-              notes: booking.notes ?? ""
+              driver_notes: booking.driver_notes ?? ""
             }
           ])
         )
@@ -161,7 +163,7 @@ export function DriverDashboard({
   }
 
   async function updateBooking(booking: Booking, status?: BookingStatus) {
-    const draft = drafts[booking.id] ?? { final_price: "", helper_charge: "", notes: "" };
+    const draft = drafts[booking.id] ?? { final_price: "", helper_charge: "", driver_notes: "" };
     const finalPrice = draft.final_price === "" ? null : Number(draft.final_price);
     const helperCharge = draft.helper_charge === "" ? null : Number(draft.helper_charge);
 
@@ -205,7 +207,7 @@ export function DriverDashboard({
           status,
           final_price: finalPrice,
           helper_charge: helperCharge,
-          notes: draft.notes || null
+          driver_notes: draft.driver_notes || null
         })
       });
       const data = await response.json();
@@ -220,7 +222,7 @@ export function DriverDashboard({
         [booking.id]: {
           final_price: data.booking.final_price?.toString() ?? "",
           helper_charge: data.booking.helper_charge?.toString() ?? "",
-          notes: data.booking.notes ?? ""
+          driver_notes: data.booking.driver_notes ?? ""
         }
       }));
     } catch (caught) {
@@ -243,7 +245,7 @@ export function DriverDashboard({
       [id]: {
         final_price: current[id]?.final_price ?? "",
         helper_charge: current[id]?.helper_charge ?? "",
-        notes: current[id]?.notes ?? "",
+        driver_notes: current[id]?.driver_notes ?? "",
         ...patch
       }
     }));
@@ -286,7 +288,7 @@ export function DriverDashboard({
 
       <div className="cards">
         {filteredBookings.map((booking) => {
-          const draft = drafts[booking.id] ?? { final_price: "", helper_charge: "", notes: "" };
+          const draft = drafts[booking.id] ?? { final_price: "", helper_charge: "", driver_notes: "" };
           const statusOptions = getStatusOptions(booking.status);
           const finalPriceIsRequired = booking.status === "booked" || statusOptions.includes("booked");
           const recordError = recordErrors[booking.id];
@@ -297,7 +299,8 @@ export function DriverDashboard({
             `Pickup time: ${formatDateTime(booking.pickup_time)}`,
             `Estimated price: ${formatMoney(booking.estimated_price)}`,
             booking.need_helper ? "Helper needed for loading/unloading: Yes" : null,
-            booking.helper_charge ? `Helper charge: ${formatMoney(booking.helper_charge)} (not included in ride final price)` : null
+            booking.helper_charge ? `Helper charge: ${formatMoney(booking.helper_charge)} (not included in ride final price)` : null,
+            booking.driver_notes ? `Driver notes: ${booking.driver_notes}` : null
           ].filter(Boolean).join("\n");
 
           return (
@@ -313,7 +316,7 @@ export function DriverDashboard({
                 <div className="route-section">
                   <div className="route-path">
                     <span className="route-location">{booking.pickup_location}</span>
-                    <span className="route-arrow" aria-hidden="true">→</span>
+                    <span className="route-arrow" aria-hidden="true">to</span>
                     <span className="route-location">{booking.drop_location}</span>
                   </div>
                   <div className="meta-row">
@@ -366,6 +369,7 @@ export function DriverDashboard({
                     id={`final-${booking.id}`}
                     min="0"
                     onChange={(event) => setDraft(booking.id, { final_price: event.target.value })}
+                    onWheel={(event) => event.currentTarget.blur()}
                     ref={(element) => {
                       finalPriceRefs.current[booking.id] = element;
                     }}
@@ -376,12 +380,21 @@ export function DriverDashboard({
                   />
                 </div>
                 <div className="field">
-                  <label htmlFor={`notes-${booking.id}`}>{copy.notesLabel}</label>
+                  <label htmlFor={`customer-notes-${booking.id}`}>{copy.customerNotesLabel}</label>
                   <input
-                    id={`notes-${booking.id}`}
-                    onChange={(event) => setDraft(booking.id, { notes: event.target.value })}
+                    id={`customer-notes-${booking.id}`}
+                    readOnly
                     type="text"
-                    value={draft.notes}
+                    value={booking.customer_notes ?? copy.notSetLabel}
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor={`driver-notes-${booking.id}`}>{copy.driverNotesLabel}</label>
+                  <input
+                    id={`driver-notes-${booking.id}`}
+                    onChange={(event) => setDraft(booking.id, { driver_notes: event.target.value })}
+                    type="text"
+                    value={draft.driver_notes}
                   />
                 </div>
                 {booking.need_helper ? (
@@ -391,6 +404,7 @@ export function DriverDashboard({
                       id={`helper-${booking.id}`}
                       min="0"
                       onChange={(event) => setDraft(booking.id, { helper_charge: event.target.value })}
+                      onWheel={(event) => event.currentTarget.blur()}
                       placeholder={copy.helperChargeHint}
                       step="0.01"
                       type="number"
@@ -432,7 +446,13 @@ export function DriverDashboard({
                     onClick={() => updateBooking(booking, status)}
                     type="button"
                   >
-                    {status === "rejected" ? copy.reject : `${copy.setStatusPrefix} ${STATUS_LABELS[status]}`}
+                    {status === "rejected"
+                      ? copy.reject
+                      : status === "booked"
+                        ? "Accept booking"
+                        : status === "completed"
+                          ? "Mark completed"
+                          : `${copy.setStatusPrefix} ${STATUS_LABELS[status]}`}
                   </button>
                 ))}
               </div>

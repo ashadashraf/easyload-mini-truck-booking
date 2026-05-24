@@ -28,7 +28,8 @@ const BOOKING_COLUMNS = `
   need_helper,
   helper_charge,
   status,
-  notes,
+  customer_notes,
+  driver_notes,
   created_at,
   updated_at
 `;
@@ -84,7 +85,8 @@ export async function createBooking(input: CreateBookingInput): Promise<Booking>
       need_helper: input.need_helper ?? false,
       helper_charge: null,
       status: "pending",
-      notes: null
+      customer_notes: input.customer_notes ?? null,
+      driver_notes: null
     })
     .select(BOOKING_COLUMNS)
     .single();
@@ -146,8 +148,8 @@ export async function updateBooking(id: string, input: UpdateBookingInput): Prom
     patch.helper_charge = input.helper_charge;
   }
 
-  if (input.notes !== undefined) {
-    patch.notes = input.notes;
+  if (input.driver_notes !== undefined) {
+    patch.driver_notes = input.driver_notes;
   }
 
   const { data, error } = await supabase
@@ -197,6 +199,8 @@ async function getFareEstimate(input: CreateBookingInput) {
 function mapBookingRow(row: BookingRow): Booking {
   return {
     ...row,
+    customer_notes: row.customer_notes ?? null,
+    driver_notes: row.driver_notes ?? null,
     estimated_price: toNumber(row.estimated_price),
     estimated_distance_km: toNullableNumber(row.estimated_distance_km),
     expected_price: toNullableNumber(row.expected_price),
