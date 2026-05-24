@@ -16,6 +16,7 @@ export function toCustomerBooking(booking: Booking): CustomerBooking {
     helper_charge: booking.helper_charge,
     status: booking.status,
     customer_notes: booking.customer_notes,
+    driver_notes: booking.driver_notes,
     created_at: booking.created_at,
     updated_at: booking.updated_at
   };

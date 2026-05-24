@@ -25,7 +25,7 @@ export type Booking = {
   updated_at: string;
 };
 
-export type CustomerBooking = Omit<Booking, "access_token" | "phone_number" | "estimate_source" | "driver_notes">;
+export type CustomerBooking = Omit<Booking, "access_token" | "phone_number" | "estimate_source">;
 
 export type CreateBookingInput = {
   pickup_location: string;

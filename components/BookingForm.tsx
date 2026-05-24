@@ -304,11 +304,12 @@ export function BookingForm({
           <h3>Estimated price</h3>
         </div>
         {booking ? (
-          <div className="estimate-box">
+          <>
             <div className="estimate-amount">
               <span className="price-label">Estimated price</span>
               <span className="price">{formatMoney(booking.estimated_price)}</span>
             </div>
+          <div className="estimate-box">
             <div className="confirmation-route">
               <div className="route-path">
                 <span className="route-location">{booking.pickup_location}</span>
@@ -378,6 +379,7 @@ export function BookingForm({
               </a>
             </div>
           </div>
+          </>
         ) : (
           <div className="estimate-box soft">
             <p className="muted">Your estimate will appear here after submission.</p>

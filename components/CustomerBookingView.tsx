@@ -137,6 +137,13 @@ export function CustomerBookingView({ driver, token }: { driver: DriverContact; 
           </div>
         )}
 
+        {booking.driver_notes && (
+          <div className="customer-notes">
+            <span className="notes-label">Driver notes</span>
+            <p>{booking.driver_notes}</p>
+          </div>
+        )}
+
         <div className="contact-actions">
           <div className="action-buttons">
             <a className="button primary" href={phoneHref(driver.phone)}>
