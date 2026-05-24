@@ -128,7 +128,12 @@ export function DriverAuthGate({ driver }: { driver: DriverContact }) {
 
   return (
     <>
-      <AppHeader brandHref="/driver" onLogout={logout} userEmail={session.user.email} />
+      <AppHeader
+        brandHref="/driver"
+        driverAccessToken={session.access_token}
+        onLogout={logout}
+        userEmail={session.user.email}
+      />
       <DriverDashboard driver={driver} driverAccessToken={session.access_token} />
     </>
   );

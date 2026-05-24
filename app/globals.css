@@ -1109,6 +1109,68 @@ textarea {
   color: var(--warning);
 }
 
+.driver-alert-menu {
+  position: relative;
+}
+
+.driver-alert-menu > summary {
+  backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 800;
+  list-style: none;
+  min-height: 46px;
+  padding: 11px 15px;
+}
+
+.driver-alert-menu > summary::-webkit-details-marker,
+.mobile-alert-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.driver-alert-menu > summary::after,
+.mobile-alert-menu > summary::after {
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  content: "";
+  display: inline-block;
+  height: 7px;
+  margin-left: 10px;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 160ms ease;
+  width: 7px;
+}
+
+.driver-alert-menu[open] > summary::after,
+.mobile-alert-menu[open] > summary::after {
+  transform: rotate(225deg) translateY(-2px);
+}
+
+.driver-alert-menu .driver-alerts {
+  grid-template-columns: 1fr;
+  margin: 0;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: min(380px, calc(100vw - 32px));
+  z-index: 45;
+}
+
+.driver-alert-menu .driver-alert-actions {
+  justify-content: stretch;
+}
+
+.driver-alert-menu .driver-alert-actions button {
+  flex: 1 1 140px;
+}
+
+:root[data-theme="dark"] .driver-alert-menu > summary {
+  background: rgba(15, 23, 42, 0.72);
+}
+
 .refresh-icon {
   background: none;
   border: 1px solid var(--line);
@@ -2352,8 +2414,60 @@ input[readonly] {
     grid-column: auto;
   }
 
+  .mobile-alert-menu {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .mobile-alert-menu > summary {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    font-weight: 850;
+    height: auto;
+    justify-content: space-between;
+    list-style: none;
+    min-height: 48px;
+    padding: 12px 14px;
+    width: 100%;
+  }
+
+  .mobile-alert-menu .driver-alerts {
+    border-radius: 18px;
+    grid-template-columns: 1fr;
+    margin: 0;
+    padding: 12px;
+  }
+
+  .mobile-alert-menu .driver-alerts h3 {
+    font-size: 16px;
+  }
+
+  .mobile-alert-menu .driver-alerts p {
+    font-size: 13px;
+  }
+
+  .mobile-alert-menu .driver-alert-actions {
+    display: grid;
+    gap: 8px;
+    justify-content: stretch;
+  }
+
+  .mobile-alert-menu .driver-alert-actions button {
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
   :root[data-theme="dark"] .mobile-menu-panel a,
-  :root[data-theme="dark"] .mobile-menu-panel button {
+  :root[data-theme="dark"] .mobile-menu-panel button,
+  :root[data-theme="dark"] .mobile-alert-menu > summary {
     background: rgba(15, 23, 42, 0.72);
   }
 

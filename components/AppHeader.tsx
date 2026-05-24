@@ -3,33 +3,50 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { DriverPushNotifications } from "./DriverPushNotifications";
 import { ThemeToggle } from "./ThemeToggle";
 
 type AppHeaderProps = {
   brandHref?: string;
+  driverAccessToken?: string;
   onLogout?: () => void;
   showDriverLink?: boolean;
   userEmail?: string;
 };
 
-export function AppHeader({ brandHref = "/", onLogout, showDriverLink = false, userEmail }: AppHeaderProps) {
+export function AppHeader({
+  brandHref = "/",
+  driverAccessToken,
+  onLogout,
+  showDriverLink = false,
+  userEmail
+}: AppHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDriverAlertMenuOpen, setIsDriverAlertMenuOpen] = useState(false);
+  const driverAlertMenuRef = useRef<HTMLDetailsElement | null>(null);
   const mobileMenuRef = useRef<HTMLDetailsElement | null>(null);
 
   useEffect(() => {
-    if (!isMobileMenuOpen) {
+    if (!isMobileMenuOpen && !isDriverAlertMenuOpen) {
       return;
     }
 
     function closeOnOutsideClick(event: PointerEvent) {
-      if (!mobileMenuRef.current?.contains(event.target as Node)) {
+      const target = event.target as Node;
+
+      if (isMobileMenuOpen && !mobileMenuRef.current?.contains(target)) {
         setIsMobileMenuOpen(false);
+      }
+
+      if (isDriverAlertMenuOpen && !driverAlertMenuRef.current?.contains(target)) {
+        setIsDriverAlertMenuOpen(false);
       }
     }
 
     function closeOnEscape(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setIsMobileMenuOpen(false);
+        setIsDriverAlertMenuOpen(false);
       }
     }
 
@@ -40,7 +57,7 @@ export function AppHeader({ brandHref = "/", onLogout, showDriverLink = false, u
       document.removeEventListener("pointerdown", closeOnOutsideClick);
       document.removeEventListener("keydown", closeOnEscape);
     };
-  }, [isMobileMenuOpen]);
+  }, [isDriverAlertMenuOpen, isMobileMenuOpen]);
 
   function closeMobileMenu() {
     setIsMobileMenuOpen(false);
@@ -81,6 +98,18 @@ export function AppHeader({ brandHref = "/", onLogout, showDriverLink = false, u
 
         <ThemeToggle />
 
+        {driverAccessToken ? (
+          <details
+            className="driver-alert-menu"
+            onToggle={(event) => setIsDriverAlertMenuOpen(event.currentTarget.open)}
+            open={isDriverAlertMenuOpen}
+            ref={driverAlertMenuRef}
+          >
+            <summary>Alerts</summary>
+            <DriverPushNotifications driverAccessToken={driverAccessToken} />
+          </details>
+        ) : null}
+
         {userEmail && onLogout && (
           <button
             onClick={onLogout}
@@ -109,6 +138,12 @@ export function AppHeader({ brandHref = "/", onLogout, showDriverLink = false, u
           {showDriverLink ? <Link href="/driver" onClick={closeMobileMenu}>Driver</Link> : null}
           <a href="#support" onClick={closeMobileMenu}>Support</a>
           <ThemeToggle />
+          {driverAccessToken ? (
+            <details className="mobile-alert-menu">
+              <summary>Booking alerts</summary>
+              <DriverPushNotifications driverAccessToken={driverAccessToken} />
+            </details>
+          ) : null}
           {userEmail && onLogout && (
             <button
               onClick={() => {

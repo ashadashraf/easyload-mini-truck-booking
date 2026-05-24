@@ -5,7 +5,6 @@ import { Booking, BookingStatus } from "@/lib/bookings/types";
 import { getStatusOptions, isBackwardStatusChange, STATUS_LABELS } from "@/lib/bookings/status-flow";
 import { DriverContact, phoneHref, whatsappHref } from "@/lib/driver";
 import { formatDateTime, formatDistance, formatMoney } from "@/lib/format";
-import { DriverPushNotifications } from "./DriverPushNotifications";
 
 type Draft = {
   final_price: string;
@@ -264,8 +263,6 @@ export function DriverDashboard({
           ⟳
         </button>
       </div>
-
-      <DriverPushNotifications driverAccessToken={driverAccessToken} />
 
       {error ? <p className="error">{error}</p> : null}
       {isLoading ? <p className="muted">{copy.loading}</p> : null}
