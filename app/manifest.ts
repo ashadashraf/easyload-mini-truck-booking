@@ -14,22 +14,16 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["business", "productivity", "travel"],
     icons: [
       {
-        src: "/pwa-icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: "/PickUpDxbLogo.png",
+        sizes: "512x512",
+        type: "image/png",
         purpose: "any"
-      },
-      {
-        src: "/pwa-maskable.svg",
-        sizes: "any",
-        type: "image/svg+xml",
-        purpose: "maskable"
       },
       {
         src: "/PickUpDxbLogo.png",
         sizes: "512x512",
         type: "image/png",
-        purpose: "any"
+        purpose: "maskable"
       }
     ],
     shortcuts: [
@@ -38,14 +32,14 @@ export default function manifest(): MetadataRoute.Manifest {
         short_name: "Driver",
         description: "Open the PickUp DXB driver dashboard.",
         url: "/driver",
-        icons: [{ src: "/pwa-icon.svg", sizes: "any", type: "image/svg+xml" }]
+        icons: [{ src: "/PickUpDxbLogo.png", sizes: "512x512", type: "image/png" }]
       },
       {
         name: "Book Pickup",
         short_name: "Book",
         description: "Create a customer mini truck booking.",
         url: "/",
-        icons: [{ src: "/pwa-icon.svg", sizes: "any", type: "image/svg+xml" }]
+        icons: [{ src: "/PickUpDxbLogo.png", sizes: "512x512", type: "image/png" }]
       }
     ]
   };

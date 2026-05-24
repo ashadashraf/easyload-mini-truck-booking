@@ -13,10 +13,7 @@ export const metadata: Metadata = {
     title: "PickUp DXB"
   },
   icons: {
-    icon: [
-      { url: "/pwa-icon.svg", type: "image/svg+xml" },
-      { url: "/PickUpDxbLogo.png", type: "image/png" }
-    ],
+    icon: [{ url: "/PickUpDxbLogo.png", type: "image/png" }],
     apple: [{ url: "/PickUpDxbLogo.png", type: "image/png" }]
   }
 };

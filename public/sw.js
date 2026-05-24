@@ -1,7 +1,7 @@
 const CACHE_VERSION = "pickupdxb-v2";
 const APP_SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
-const APP_SHELL_URLS = ["/", "/driver", "/manifest.webmanifest", "/pwa-icon.svg", "/pwa-maskable.svg"];
+const APP_SHELL_URLS = ["/", "/driver", "/manifest.webmanifest", "/PickUpDxbLogo.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -61,12 +61,12 @@ self.addEventListener("push", (event) => {
 
   event.waitUntil(
     self.registration.showNotification(data.title || "New PickUp DXB booking", {
-      badge: "/pwa-icon.svg",
+      badge: "/PickUpDxbLogo.png",
       body: data.body || "A new customer booking is waiting.",
       data: {
         url: sanitizeNotificationUrl(data.url)
       },
-      icon: "/pwa-icon.svg",
+      icon: "/PickUpDxbLogo.png",
       renotify: true,
       requireInteraction: true,
       tag: data.tag || (data.bookingId ? `booking-${data.bookingId}` : "new-booking")
