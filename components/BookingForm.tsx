@@ -31,15 +31,145 @@ function getMinDateTime() {
   return uaeInputDateTime(new Date());
 }
 
+const bookingCopy = {
+  en: {
+    steps: ["Location", "Details", "Confirm"],
+    fastRequest: "Fast request",
+    title: "Book your 1 ton pickup",
+    subtitle: "Enter the route, timing, and items. We will save the booking and show your estimate.",
+    vehicleTitle: "1 ton pickup",
+    vehicleDescription: "Best for shifting, delivery, furniture, boxes, and shop items.",
+    selected: "Selected",
+    pickupLocation: "Pickup location",
+    pickupPlaceholder: "Example: Dubai Marina",
+    dropLocation: "Drop-off location",
+    dropPlaceholder: "Example: Sharjah Industrial Area",
+    pickupTime: "Pickup time",
+    dropTime: "Drop-off time",
+    contactNumber: "Contact number",
+    phonePlaceholder: "Example: 971501234567",
+    expectedPrice: "Expected price (optional)",
+    expectedPlaceholder: "AED",
+    helperLabel: "Need helper for loading/unloading",
+    helperOn: "Helper charge is not included in the ride final price. It may vary based on hours and work intensity, and the helper will confirm the amount.",
+    helperOff: "Turn this on if items are heavy, bulky, or need carrying upstairs.",
+    notes: "Notes / items description",
+    notesPlaceholder: "Example: 2 sofas, boxes, washing machine, lift available",
+    saving: "Saving booking...",
+    bookNow: "Book Now",
+    microcopy: "Available across UAE. You will receive a private booking detail link after submitting.",
+    priceView: "Price view",
+    estimatedPrice: "Estimated price",
+    to: "to",
+    notSet: "Not set",
+    expectedPriceLabel: "Expected price",
+    helper: "Helper",
+    helperSummary: "Needed for loading/unloading. Helper charge is not included in the ride final price.",
+    distance: "Distance",
+    around: "Around",
+    min: "min",
+    saved: "Request saved. Keep your private link to check status and final price later.",
+    privateLink: "Private booking link",
+    redirecting: "Auto-redirecting to WhatsApp in",
+    seconds: "seconds",
+    messagePreview: "Message preview:",
+    cancelRedirect: "Cancel auto-redirect",
+    callDriver: "Call Driver",
+    whatsappDriver: "WhatsApp Driver",
+    emptyEstimate: "Your estimate will appear here after submission.",
+    emptySteps: ["1. Submit route", "2. Contact driver", "3. Agree final price"],
+    whatsappIntro: "Hello {driver}, I need a mini truck booking.",
+    whatsappPickup: "Pickup",
+    whatsappDrop: "Drop",
+    whatsappPickupTime: "Pickup time",
+    whatsappDropTime: "Drop time",
+    whatsappEstimated: "Estimated price",
+    whatsappExpected: "Expected price",
+    whatsappHelper: "Helper needed for loading/unloading: Yes",
+    whatsappNotes: "Customer notes",
+    whatsappLink: "Private booking link",
+    futurePickupError: "Pickup time must be set to a future date.",
+    validDropError: "Drop time must be a valid date.",
+    futureDropError: "Drop time must be set to a future date.",
+    dropBeforePickupError: "Drop time cannot be before pickup time.",
+    createError: "Could not create booking."
+  },
+  ar: {
+    steps: ["الموقع", "التفاصيل", "التأكيد"],
+    fastRequest: "طلب سريع",
+    title: "احجز بيك اب 1 طن",
+    subtitle: "أدخل المسار والوقت والأغراض. سنحفظ الحجز ونعرض تقدير السعر.",
+    vehicleTitle: "بيك اب 1 طن",
+    vehicleDescription: "مناسب للنقل، التوصيل، الأثاث، الصناديق، وأغراض المتاجر.",
+    selected: "محدد",
+    pickupLocation: "موقع الاستلام",
+    pickupPlaceholder: "مثال: دبي مارينا",
+    dropLocation: "موقع التسليم",
+    dropPlaceholder: "مثال: صناعية الشارقة",
+    pickupTime: "وقت الاستلام",
+    dropTime: "وقت التسليم",
+    contactNumber: "رقم التواصل",
+    phonePlaceholder: "مثال: 971501234567",
+    expectedPrice: "السعر المتوقع (اختياري)",
+    expectedPlaceholder: "درهم",
+    helperLabel: "أحتاج مساعدا للتحميل والتنزيل",
+    helperOn: "رسوم المساعد غير مشمولة في سعر الرحلة النهائي. قد تختلف حسب الوقت وطبيعة العمل، وسيؤكد المساعد المبلغ.",
+    helperOff: "فعّل هذا الخيار إذا كانت الأغراض ثقيلة أو كبيرة أو تحتاج حملا للأعلى.",
+    notes: "ملاحظات / وصف الأغراض",
+    notesPlaceholder: "مثال: كنب عدد 2، صناديق، غسالة، يوجد مصعد",
+    saving: "جاري حفظ الحجز...",
+    bookNow: "احجز الآن",
+    microcopy: "متوفر في جميع أنحاء الإمارات. ستحصل على رابط خاص لتفاصيل الحجز بعد الإرسال.",
+    priceView: "عرض السعر",
+    estimatedPrice: "السعر التقديري",
+    to: "إلى",
+    notSet: "غير محدد",
+    expectedPriceLabel: "السعر المتوقع",
+    helper: "مساعد",
+    helperSummary: "مطلوب للتحميل والتنزيل. رسوم المساعد غير مشمولة في سعر الرحلة النهائي.",
+    distance: "المسافة",
+    around: "حوالي",
+    min: "دقيقة",
+    saved: "تم حفظ الطلب. احتفظ بالرابط الخاص لمتابعة الحالة والسعر النهائي لاحقا.",
+    privateLink: "رابط الحجز الخاص",
+    redirecting: "سيتم التحويل إلى واتساب خلال",
+    seconds: "ثوان",
+    messagePreview: "معاينة الرسالة:",
+    cancelRedirect: "إلغاء التحويل التلقائي",
+    callDriver: "اتصال بالسائق",
+    whatsappDriver: "واتساب السائق",
+    emptyEstimate: "سيظهر تقدير السعر هنا بعد الإرسال.",
+    emptySteps: ["1. أرسل المسار", "2. تواصل مع السائق", "3. اتفق على السعر النهائي"],
+    whatsappIntro: "مرحبا {driver}، أحتاج حجز بيك اب.",
+    whatsappPickup: "الاستلام",
+    whatsappDrop: "التسليم",
+    whatsappPickupTime: "وقت الاستلام",
+    whatsappDropTime: "وقت التسليم",
+    whatsappEstimated: "السعر التقديري",
+    whatsappExpected: "السعر المتوقع",
+    whatsappHelper: "مطلوب مساعد للتحميل والتنزيل: نعم",
+    whatsappNotes: "ملاحظات العميل",
+    whatsappLink: "رابط الحجز الخاص",
+    futurePickupError: "يجب أن يكون وقت الاستلام في المستقبل.",
+    validDropError: "يجب أن يكون وقت التسليم صحيحا.",
+    futureDropError: "يجب أن يكون وقت التسليم في المستقبل.",
+    dropBeforePickupError: "لا يمكن أن يكون وقت التسليم قبل وقت الاستلام.",
+    createError: "تعذر إنشاء الحجز."
+  }
+};
+
 export function BookingForm({
   driver,
+  locale = "en",
   locationSuggestions,
   onBookingCreated
 }: {
   driver: DriverContact;
+  locale?: "ar" | "en";
   locationSuggestions: string[];
   onBookingCreated?: (booking: CustomerBooking, accessLink: string) => void;
 }) {
+  const copy = bookingCopy[locale];
   const [form, setForm] = useState<FormState>(initialForm);
   const [booking, setBooking] = useState<CustomerBooking | null>(null);
   const [accessLink, setAccessLink] = useState("");
@@ -69,20 +199,20 @@ export function BookingForm({
     }
 
     return [
-      `Hello ${driver.name}, I need a mini truck booking.`,
-      `Pickup: ${booking.pickup_location}`,
-      `Drop: ${booking.drop_location}`,
-      `Pickup time: ${formatDateTime(booking.pickup_time)}`,
-      booking.drop_time ? `Drop time: ${formatDateTime(booking.drop_time)}` : null,
-      `Estimated price: ${formatMoney(booking.estimated_price)}`,
-      booking.expected_price ? `Expected price: ${formatMoney(booking.expected_price)}` : null,
-      booking.need_helper ? "Helper needed for loading/unloading: Yes" : null,
-      booking.customer_notes ? `Customer notes: ${booking.customer_notes}` : null,
-      accessLink ? `Private booking link: ${accessLink}` : null
+      copy.whatsappIntro.replace("{driver}", driver.name),
+      `${copy.whatsappPickup}: ${booking.pickup_location}`,
+      `${copy.whatsappDrop}: ${booking.drop_location}`,
+      `${copy.whatsappPickupTime}: ${formatDateTime(booking.pickup_time)}`,
+      booking.drop_time ? `${copy.whatsappDropTime}: ${formatDateTime(booking.drop_time)}` : null,
+      `${copy.whatsappEstimated}: ${formatMoney(booking.estimated_price)}`,
+      booking.expected_price ? `${copy.whatsappExpected}: ${formatMoney(booking.expected_price)}` : null,
+      booking.need_helper ? copy.whatsappHelper : null,
+      booking.customer_notes ? `${copy.whatsappNotes}: ${booking.customer_notes}` : null,
+      accessLink ? `${copy.whatsappLink}: ${accessLink}` : null
     ]
       .filter(Boolean)
       .join("\n");
-  }, [accessLink, booking, driver.name]);
+  }, [accessLink, booking, copy, driver.name]);
 
   useEffect(() => {
     if (!booking || !estimateRef.current) {
@@ -127,22 +257,22 @@ export function BookingForm({
 
       // Allow pickup times that are not more than 5 minutes in the past (for timing differences)
       if (!pickupDate || pickupDate.getTime() < now.getTime() - 300000) {
-        throw new Error("Pickup time must be set to a future date.");
+        throw new Error(copy.futurePickupError);
       }
 
       if (form.drop_time) {
         const dropDate = parseUaeDateTime(form.drop_time);
 
         if (!dropDate) {
-          throw new Error("Drop time must be a valid date.");
+          throw new Error(copy.validDropError);
         }
 
         if (dropDate.getTime() < now.getTime() - 300000) {
-          throw new Error("Drop time must be set to a future date.");
+          throw new Error(copy.futureDropError);
         }
 
         if (dropDate < pickupDate) {
-          throw new Error("Drop time cannot be before pickup time.");
+          throw new Error(copy.dropBeforePickupError);
         }
       }
 
@@ -165,7 +295,7 @@ export function BookingForm({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Could not create booking.");
+        throw new Error(data.error || copy.createError);
       }
 
       setBooking(data.booking);
@@ -175,7 +305,7 @@ export function BookingForm({
       // Start auto-redirect timer (5 seconds)
       setRedirectTimer(10);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Could not create booking.");
+      setError(caught instanceof Error ? caught.message : copy.createError);
     } finally {
       setIsSubmitting(false);
     }
@@ -185,22 +315,22 @@ export function BookingForm({
     <div className="grid">
       <section className="panel booking-panel">
         <div className="booking-steps" aria-label="Booking steps">
-          <span className="active">Location</span>
-          <span>Details</span>
-          <span>Confirm</span>
+          <span className="active">{copy.steps[0]}</span>
+          <span>{copy.steps[1]}</span>
+          <span>{copy.steps[2]}</span>
         </div>
         <div className="section-title">
-          <span className="eyebrow">Fast request</span>
-          <h2>Book your 1 ton pickup</h2>
-          <p className="muted">Enter the route, timing, and items. We will save the booking and show your estimate.</p>
+          <span className="eyebrow">{copy.fastRequest}</span>
+          <h2>{copy.title}</h2>
+          <p className="muted">{copy.subtitle}</p>
         </div>
         <div className="vehicle-option-card" aria-label="Selected vehicle">
           <div className="vehicle-visual" aria-hidden="true">1T</div>
           <div>
-            <strong>1 ton pickup</strong>
-            <span>Best for shifting, delivery, furniture, boxes, and shop items.</span>
+            <strong>{copy.vehicleTitle}</strong>
+            <span>{copy.vehicleDescription}</span>
           </div>
-          <span className="selected-pill">Selected</span>
+          <span className="selected-pill">{copy.selected}</span>
         </div>
         <form onSubmit={submitBooking}>
           <datalist id="uae-location-suggestions">
@@ -211,22 +341,22 @@ export function BookingForm({
           <div className="form-grid">
             <Field
               list="uae-location-suggestions"
-              label="Pickup location"
+              label={copy.pickupLocation}
               name="pickup_location"
-              placeholder="Example: Dubai Marina"
+              placeholder={copy.pickupPlaceholder}
               value={form.pickup_location}
               onChange={(value) => setForm({ ...form, pickup_location: value })}
             />
             <Field
               list="uae-location-suggestions"
-              label="Drop-off location"
+              label={copy.dropLocation}
               name="drop_location"
-              placeholder="Example: Sharjah Industrial Area"
+              placeholder={copy.dropPlaceholder}
               value={form.drop_location}
               onChange={(value) => setForm({ ...form, drop_location: value })}
             />
             <Field
-              label="Pickup time"
+              label={copy.pickupTime}
               name="pickup_time"
               type="datetime-local"
               min={minDateTime}
@@ -234,7 +364,7 @@ export function BookingForm({
               onChange={(value) => setForm({ ...form, pickup_time: value })}
             />
             <Field
-              label="Drop-off time"
+              label={copy.dropTime}
               name="drop_time"
               type="datetime-local"
               min={dropMinDateTime}
@@ -243,17 +373,17 @@ export function BookingForm({
               onChange={(value) => setForm({ ...form, drop_time: value })}
             />
             <Field
-              label="Contact number"
+              label={copy.contactNumber}
               name="phone_number"
-              placeholder="Example: 971501234567"
+              placeholder={copy.phonePlaceholder}
               type="tel"
               value={form.phone_number}
               onChange={(value) => setForm({ ...form, phone_number: value })}
             />
             <Field
-              label="Expected price (optional)"
+              label={copy.expectedPrice}
               name="expected_price"
-              placeholder="AED"
+              placeholder={copy.expectedPlaceholder}
               inputMode="decimal"
               required={false}
               value={form.expected_price}
@@ -268,21 +398,20 @@ export function BookingForm({
                   onChange={(event) => setForm({ ...form, need_helper: event.target.checked })}
                   type="checkbox"
                 />
-                Need helper for loading/unloading
+                {copy.helperLabel}
               </label>
               {form.need_helper ? (
                 <p className="helper-note">
-                  Helper charge is not included in the ride final price. It may vary based on hours and work intensity,
-                  and the helper will confirm the amount.
+                  {copy.helperOn}
                 </p>
               ) : (
-                <p className="helper-note">Turn this on if items are heavy, bulky, or need carrying upstairs.</p>
+                <p className="helper-note">{copy.helperOff}</p>
               )}
             </div>
             <TextArea
-              label="Notes / items description"
+              label={copy.notes}
               name="customer_notes"
-              placeholder="Example: 2 sofas, boxes, washing machine, lift available"
+              placeholder={copy.notesPlaceholder}
               required={false}
               value={form.customer_notes}
               onChange={(value) => setForm({ ...form, customer_notes: value })}
@@ -291,65 +420,65 @@ export function BookingForm({
           {error ? <p className="error">{error}</p> : null}
           <div className="actions">
             <button className="primary" disabled={isSubmitting} type="submit">
-              {isSubmitting ? "Saving booking..." : "Book Now"}
+              {isSubmitting ? copy.saving : copy.bookNow}
             </button>
-            <p className="form-microcopy">Available across UAE. You will receive a private booking detail link after submitting.</p>
+            <p className="form-microcopy">{copy.microcopy}</p>
           </div>
         </form>
       </section>
 
       <aside className="panel estimate-panel" ref={estimateRef} tabIndex={-1}>
         <div className="section-title compact">
-          <span className="eyebrow">Price view</span>
-          <h3>Estimated price</h3>
+          <span className="eyebrow">{copy.priceView}</span>
+          <h3>{copy.estimatedPrice}</h3>
         </div>
         {booking ? (
           <>
             <div className="estimate-amount">
-              <span className="price-label">Estimated price</span>
+              <span className="price-label">{copy.estimatedPrice}</span>
               <span className="price">{formatMoney(booking.estimated_price)}</span>
             </div>
           <div className="estimate-box">
             <div className="confirmation-route">
               <div className="route-path">
                 <span className="route-location">{booking.pickup_location}</span>
-                <span className="route-arrow" aria-hidden="true">to</span>
+                <span className="route-arrow" aria-hidden="true">{copy.to}</span>
                 <span className="route-location">{booking.drop_location}</span>
               </div>
               <div className="route-times">
                 <span>
-                  <strong>Pickup time</strong>
+                  <strong>{copy.pickupTime}</strong>
                   {formatDateTime(booking.pickup_time)}
                 </span>
                 <span>
-                  <strong>Drop time</strong>
-                  {booking.drop_time ? formatDateTime(booking.drop_time) : "Not set"}
+                  <strong>{copy.dropTime}</strong>
+                  {booking.drop_time ? formatDateTime(booking.drop_time) : copy.notSet}
                 </span>
               </div>
               {booking.expected_price ? (
                 <span className="price-row">
-                  <strong>Expected price</strong>
+                  <strong>{copy.expectedPriceLabel}</strong>
                   {formatMoney(booking.expected_price)}
                 </span>
               ) : null}
               {booking.need_helper ? (
                 <span className="price-row">
-                  <strong>Helper</strong>
-                  Needed for loading/unloading. Helper charge is not included in the ride final price.
+                  <strong>{copy.helper}</strong>
+                  {copy.helperSummary}
                 </span>
               ) : null}
             </div>
             <span className="muted">
-              Distance: {formatDistance(booking.estimated_distance_km)}
-              {booking.estimated_duration_minutes ? ` - Around ${booking.estimated_duration_minutes} min` : ""}
+              {copy.distance}: {formatDistance(booking.estimated_distance_km)}
+              {booking.estimated_duration_minutes ? ` - ${copy.around} ${booking.estimated_duration_minutes} ${copy.min}` : ""}
             </span>
             <span className={`status ${booking.status}`}>{booking.status}</span>
             <p className="muted">
-              Request saved. Keep your private link to check status and final price later.
+              {copy.saved}
             </p>
             {accessLink ? (
               <div className="private-link">
-                <strong>Private booking link</strong>
+                <strong>{copy.privateLink}</strong>
                 <a href={accessLink}>{accessLink}</a>
               </div>
             ) : null}
@@ -358,35 +487,35 @@ export function BookingForm({
                 <div className="redirect-header">
                   <span className="redirect-icon" aria-hidden="true">WA</span>
                   <span className="redirect-text">
-                    Auto-redirecting to WhatsApp in <strong>{redirectTimer}</strong> seconds
+                    {copy.redirecting} <strong>{redirectTimer}</strong> {copy.seconds}
                   </span>
                 </div>
                 <div className="redirect-message">
-                  <strong>Message preview:</strong>
+                  <strong>{copy.messagePreview}</strong>
                   <pre className="message-preview">{whatsappMessage}</pre>
                 </div>
                 <button onClick={cancelRedirect} type="button" className="cancel-redirect">
-                  Cancel auto-redirect
+                  {copy.cancelRedirect}
                 </button>
               </div>
             )}
             <div className="actions">
               <a className="button primary" href={phoneHref(driver.phone)}>
-                Call Driver
+                {copy.callDriver}
               </a>
               <a className="button" href={whatsappHref(driver.phone, whatsappMessage)} rel="noreferrer" target="_blank">
-                WhatsApp Driver
+                {copy.whatsappDriver}
               </a>
             </div>
           </div>
           </>
         ) : (
           <div className="estimate-box soft">
-            <p className="muted">Your estimate will appear here after submission.</p>
+            <p className="muted">{copy.emptyEstimate}</p>
             <div className="step-list">
-              <span>1. Submit route</span>
-              <span>2. Contact driver</span>
-              <span>3. Agree final price</span>
+              {copy.emptySteps.map((step) => (
+                <span key={step}>{step}</span>
+              ))}
             </div>
           </div>
         )}

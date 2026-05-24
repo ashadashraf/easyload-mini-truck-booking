@@ -25,9 +25,11 @@ type RecentBooking = CachedBooking & {
 
 export function CustomerBookingExperience({
   driver,
+  locale = "en",
   locationSuggestions
 }: {
   driver: DriverContact;
+  locale?: "ar" | "en";
   locationSuggestions: string[];
 }) {
   const [cachedBookings, setCachedBookings] = useState<CachedBooking[]>([]);
@@ -198,6 +200,7 @@ export function CustomerBookingExperience({
 
       <BookingForm
         driver={driver}
+        locale={locale}
         locationSuggestions={locationSuggestions}
         onBookingCreated={handleBookingCreated}
       />

@@ -9,18 +9,47 @@ import { ThemeToggle } from "./ThemeToggle";
 type AppHeaderProps = {
   brandHref?: string;
   driverAccessToken?: string;
+  bookHref?: string;
+  languageHref?: string;
+  languageLabel?: string;
+  labels?: Partial<{
+    alerts: string;
+    book: string;
+    brandTagline: string;
+    driver: string;
+    mobileAlert: string;
+    mobileTitle: string;
+    signOut: string;
+    support: string;
+  }>;
   onLogout?: () => void;
   showDriverLink?: boolean;
   userEmail?: string;
 };
 
+const defaultLabels = {
+  alerts: "Alerts",
+  book: "Book",
+  brandTagline: "OPERATING ACROSS UAE",
+  driver: "Driver",
+  mobileAlert: "Booking alerts",
+  mobileTitle: "Book a Pickup Anywhere in UAE",
+  signOut: "Sign out",
+  support: "Support"
+};
+
 export function AppHeader({
   brandHref = "/",
+  bookHref = "/",
   driverAccessToken,
+  languageHref,
+  languageLabel,
+  labels,
   onLogout,
   showDriverLink = false,
   userEmail
 }: AppHeaderProps) {
+  const copy = { ...defaultLabels, ...labels };
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDriverAlertMenuOpen, setIsDriverAlertMenuOpen] = useState(false);
   const driverAlertMenuRef = useRef<HTMLDetailsElement | null>(null);
@@ -78,23 +107,24 @@ export function AppHeader({
           <div className="brand-copy">
             <span className="brand-name">PickUp DXB</span>
             <p className="brand-tagline">
-              OPERATING ACROSS UAE
+              {copy.brandTagline}
             </p>
-            <p className="mobile-header-title">Book a Pickup Anywhere in UAE</p>
+            <p className="mobile-header-title">{copy.mobileTitle}</p>
           </div>
         </div>
       </Link>
 
       <nav className="nav" aria-label="Primary navigation">
-        <Link href="/">Book</Link>
+        <Link href={bookHref}>{copy.book}</Link>
 
         {showDriverLink ? (
           <Link href="/driver">
-            Driver
+            {copy.driver}
           </Link>
         ) : null}
 
-        <a href="#support">Support</a>
+        <a href="#support">{copy.support}</a>
+        {languageHref && languageLabel ? <Link href={languageHref}>{languageLabel}</Link> : null}
 
         <ThemeToggle />
 
@@ -105,7 +135,7 @@ export function AppHeader({
             open={isDriverAlertMenuOpen}
             ref={driverAlertMenuRef}
           >
-            <summary>Alerts</summary>
+            <summary>{copy.alerts}</summary>
             <DriverPushNotifications driverAccessToken={driverAccessToken} />
           </details>
         ) : null}
@@ -115,9 +145,9 @@ export function AppHeader({
             onClick={onLogout}
             type="button"
             className="logout-btn"
-            title={`Sign out (${userEmail})`}
+            title={`${copy.signOut} (${userEmail})`}
           >
-            Sign out
+            {copy.signOut}
           </button>
         )}
       </nav>
@@ -134,13 +164,16 @@ export function AppHeader({
           <span aria-hidden="true" />
         </summary>
         <nav className="mobile-menu-panel" aria-label="Mobile navigation">
-          <Link href="/" onClick={closeMobileMenu}>Book</Link>
-          {showDriverLink ? <Link href="/driver" onClick={closeMobileMenu}>Driver</Link> : null}
-          <a href="#support" onClick={closeMobileMenu}>Support</a>
+          <Link href={bookHref} onClick={closeMobileMenu}>{copy.book}</Link>
+          {showDriverLink ? <Link href="/driver" onClick={closeMobileMenu}>{copy.driver}</Link> : null}
+          <a href="#support" onClick={closeMobileMenu}>{copy.support}</a>
+          {languageHref && languageLabel ? (
+            <Link href={languageHref} onClick={closeMobileMenu}>{languageLabel}</Link>
+          ) : null}
           <ThemeToggle />
           {driverAccessToken ? (
             <details className="mobile-alert-menu">
-              <summary>Booking alerts</summary>
+              <summary>{copy.mobileAlert}</summary>
               <DriverPushNotifications driverAccessToken={driverAccessToken} />
             </details>
           ) : null}
@@ -152,9 +185,9 @@ export function AppHeader({
               }}
               type="button"
               className="logout-btn"
-              title={`Sign out (${userEmail})`}
+              title={`${copy.signOut} (${userEmail})`}
             >
-              Sign out
+              {copy.signOut}
             </button>
           )}
         </nav>

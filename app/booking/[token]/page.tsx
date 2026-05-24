@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import { AppFooter } from "@/components/AppFooter";
 import { AppHeader } from "@/components/AppHeader";
 import { CustomerBookingView } from "@/components/CustomerBookingView";
 import { driverConfig } from "@/lib/config";
+
+export const metadata: Metadata = {
+  title: "Private Booking Details",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 type Props = {
   params: Promise<{
