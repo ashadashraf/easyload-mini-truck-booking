@@ -4,7 +4,10 @@ import { toCustomerBooking } from "@/lib/bookings/customer-view";
 import { parseCreateBookingInput } from "@/lib/bookings/validation";
 import { requireDriver } from "@/lib/auth/driver";
 import { errorResponse } from "@/lib/http";
+import { notifyDriversAboutNewBooking } from "@/lib/notifications/web-push";
 import { rateLimit } from "@/lib/rate-limit";
+
+export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
   try {
@@ -42,6 +45,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const input = parseCreateBookingInput(body);
     const booking = await createBooking(input);
+    await notifyDriversAboutNewBooking(booking, request.nextUrl.origin).catch((notificationError) => {
+      console.error("Booking created, but driver push notification failed.", notificationError);
+    });
     const accessLink = `${request.nextUrl.origin}/booking/${booking.access_token}`;
     return NextResponse.json({ booking: toCustomerBooking(booking), access_link: accessLink }, { status: 201 });
   } catch (error) {

@@ -1054,6 +1054,61 @@ textarea {
   margin: 0;
 }
 
+.driver-alerts {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(8, 127, 115, 0.1), transparent 52%),
+    var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr auto;
+  margin: 18px 0;
+  padding: 16px;
+}
+
+.driver-alerts h3 {
+  font-size: 18px;
+  margin: 8px 0 6px;
+}
+
+.driver-alerts p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.driver-alerts .error,
+.driver-alerts .success {
+  grid-column: 1 / -1;
+}
+
+.driver-alert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.alert-status {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 10px;
+  text-transform: uppercase;
+}
+
+.alert-status.enabled {
+  background: #dcfce7;
+  color: var(--ok);
+}
+
+.alert-status.disabled {
+  background: #fff7db;
+  color: var(--warning);
+}
+
 .refresh-icon {
   background: none;
   border: 1px solid var(--line);
@@ -1150,8 +1205,30 @@ textarea {
   padding: 10px 12px;
 }
 
+.success {
+  background: var(--accent-soft);
+  border-radius: 8px;
+  color: var(--accent-strong);
+  font-weight: 700;
+  padding: 10px 12px;
+}
+
 .record-error {
   margin: 0 0 12px;
+}
+
+@media (max-width: 720px) {
+  .driver-alerts {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-alert-actions {
+    justify-content: stretch;
+  }
+
+  .driver-alert-actions button {
+    flex: 1 1 150px;
+  }
 }
 
 .redirect-notice {

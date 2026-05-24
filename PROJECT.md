@@ -62,9 +62,13 @@ Statuses:
 - `PATCH /api/bookings/:id` protected: driver-only update status/final_price/notes
 - `GET /api/bookings/token/:token` public: fetch booking by `access_token`
 - `GET /api/estimate` public: local preview estimate (does NOT call Google)
+- `POST /api/driver/push-subscriptions` protected: save driver PWA push subscription
+- `DELETE /api/driver/push-subscriptions` protected: remove driver PWA push subscription
+- `POST /api/driver/push-subscriptions/test` protected: send a driver test notification
 
 **Storage**
 - All bookings live in Supabase table `public.bookings` (see `supabase/schema.sql`).
+- Driver PWA notification subscriptions live in `public.driver_push_subscriptions`.
 - The old `data/bookings.json` file is not used anymore (kept only as a historical artifact/export).
 
 ## Authentication Model
@@ -132,6 +136,11 @@ Supabase Auth (browser-safe):
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `DRIVER_AUTH_EMAIL` (optional allow-list)
+
+Driver PWA notifications:
+- `NEXT_PUBLIC_VAPID_PUBLIC_KEY`
+- `VAPID_PRIVATE_KEY`
+- `VAPID_SUBJECT`
 
 Fare config:
 - `NEXT_PUBLIC_CURRENCY`

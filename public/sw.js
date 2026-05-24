@@ -1,4 +1,4 @@
-const CACHE_VERSION = "pickupdxb-v1";
+const CACHE_VERSION = "pickupdxb-v2";
 const APP_SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const APP_SHELL_URLS = ["/", "/driver", "/manifest.webmanifest", "/pwa-icon.svg", "/pwa-maskable.svg"];
@@ -56,6 +56,48 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
+self.addEventListener("push", (event) => {
+  const data = getPushData(event);
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || "New PickUp DXB booking", {
+      badge: "/pwa-icon.svg",
+      body: data.body || "A new customer booking is waiting.",
+      data: {
+        url: sanitizeNotificationUrl(data.url)
+      },
+      icon: "/pwa-icon.svg",
+      renotify: true,
+      requireInteraction: true,
+      tag: data.tag || (data.bookingId ? `booking-${data.bookingId}` : "new-booking")
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const targetUrl = sanitizeNotificationUrl(event.notification.data?.url);
+
+  event.waitUntil(
+    clients.matchAll({ includeUncontrolled: true, type: "window" }).then((clientList) => {
+      for (const client of clientList) {
+        if ("navigate" in client && "focus" in client) {
+          return client.navigate(targetUrl).then((focusedClient) => {
+            if (focusedClient) {
+              return focusedClient.focus();
+            }
+
+            return client.focus();
+          });
+        }
+      }
+
+      return clients.openWindow(targetUrl);
+    })
+  );
+});
+
 async function networkFirst(request) {
   const cache = await caches.open(APP_SHELL_CACHE);
 
@@ -87,4 +129,32 @@ async function staleWhileRevalidate(request) {
     .catch(() => cachedResponse);
 
   return cachedResponse || fetchPromise;
+}
+
+function getPushData(event) {
+  if (!event.data) {
+    return {};
+  }
+
+  try {
+    return event.data.json();
+  } catch {
+    return {
+      body: event.data.text()
+    };
+  }
+}
+
+function sanitizeNotificationUrl(url) {
+  try {
+    const targetUrl = new URL(url || "/driver", self.location.origin);
+
+    if (targetUrl.origin !== self.location.origin) {
+      return `${self.location.origin}/driver`;
+    }
+
+    return targetUrl.href;
+  } catch {
+    return `${self.location.origin}/driver`;
+  }
 }

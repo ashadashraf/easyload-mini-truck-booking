@@ -44,10 +44,30 @@ create index if not exists bookings_route_idx on public.bookings (
   lower(trim(drop_location))
 );
 
+create table if not exists public.driver_push_subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  driver_email text not null,
+  endpoint text not null unique,
+  p256dh text not null,
+  auth text not null,
+  user_agent text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists driver_push_subscriptions_driver_email_idx
+on public.driver_push_subscriptions (driver_email);
+
+create unique index if not exists driver_push_subscriptions_endpoint_idx
+on public.driver_push_subscriptions (endpoint);
+
 alter table public.bookings enable row level security;
+alter table public.driver_push_subscriptions enable row level security;
 
 drop policy if exists "bookings_no_anon_direct_access" on public.bookings;
 drop policy if exists "bookings_no_authenticated_direct_access" on public.bookings;
+drop policy if exists "driver_push_subscriptions_no_anon_direct_access" on public.driver_push_subscriptions;
+drop policy if exists "driver_push_subscriptions_no_authenticated_direct_access" on public.driver_push_subscriptions;
 
 create policy "bookings_no_anon_direct_access"
 on public.bookings
@@ -65,5 +85,24 @@ to authenticated
 using (false)
 with check (false);
 
+create policy "driver_push_subscriptions_no_anon_direct_access"
+on public.driver_push_subscriptions
+as restrictive
+for all
+to anon
+using (false)
+with check (false);
+
+create policy "driver_push_subscriptions_no_authenticated_direct_access"
+on public.driver_push_subscriptions
+as restrictive
+for all
+to authenticated
+using (false)
+with check (false);
+
 comment on table public.bookings is
   'Bookings are accessed only through Next.js API routes. Browser clients must not query this table directly. Driver APIs verify Supabase Auth, then server-side service role performs database operations. Customer access is only by private access_token through /api/bookings/token/:token.';
+
+comment on table public.driver_push_subscriptions is
+  'Driver PWA push subscriptions. Accessed only through authenticated Next.js driver API routes using the server-side service role.';

@@ -26,6 +26,7 @@ The app keeps the workflow deliberately simple:
 - **Search Functionality**: Find bookings by ID or customer mobile number
 - **Status Management**: Update booking status through the workflow
 - **Price Negotiation**: Record final agreed prices and notes
+- **PWA Booking Alerts**: Installable driver PWA with browser push notifications for new bookings
 - **Multi-language Support**: English and Malayalam language options
 - **Real-time Updates**: Live booking status and customer information
 
@@ -62,6 +63,9 @@ Fare estimate rule: AED 60 minimum up to 5 km, then AED 4 per km after 5 km. Exa
 - `GET /api/bookings/:id`: get one booking
 - `PATCH /api/bookings/:id`: update `status`, `final_price`, and `notes`
 - `GET /api/estimate?pickup_location=...&drop_location=...`: return estimated fare
+- `POST /api/driver/push-subscriptions`: save a driver PWA push subscription
+- `DELETE /api/driver/push-subscriptions`: remove a driver PWA push subscription
+- `POST /api/driver/push-subscriptions/test`: send a driver test notification
 
 ## Local Setup
 
@@ -112,6 +116,10 @@ NEXT_PUBLIC_SUPABASE_URL="https://your-project-ref.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY=""
 DRIVER_AUTH_EMAIL="driver@example.com"
 
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=""
+VAPID_PRIVATE_KEY=""
+VAPID_SUBJECT="mailto:owner@example.com"
+
 NEXT_PUBLIC_CURRENCY="AED"
 FARE_BASE_AED=60
 FARE_PER_KM_AED=4
@@ -124,6 +132,14 @@ GOOGLE_MAPS_REGION="ae"
 ```
 
 Use the UAE international phone format without `+` for WhatsApp links.
+
+For PWA driver notifications, generate VAPID keys with:
+
+```bash
+npx web-push generate-vapid-keys
+```
+
+Put the public key in `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, the private key in `VAPID_PRIVATE_KEY`, and a contact email or URL in `VAPID_SUBJECT`.
 
 ## Supabase Setup
 
