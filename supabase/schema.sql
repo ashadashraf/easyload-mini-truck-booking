@@ -21,6 +21,8 @@ create table if not exists public.bookings (
     check (status in ('pending', 'contacted', 'booked', 'completed', 'rejected')),
   customer_notes text,
   driver_notes text,
+  deleted_at timestamptz,
+  deleted_by text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint booked_requires_final_price check (status <> 'booked' or final_price is not null)
@@ -32,12 +34,19 @@ alter table public.bookings
 alter table public.bookings
   add column if not exists driver_notes text;
 
+alter table public.bookings
+  add column if not exists deleted_at timestamptz;
+
+alter table public.bookings
+  add column if not exists deleted_by text;
+
 update public.bookings
 set access_token = gen_random_uuid()::text || '-' || gen_random_uuid()::text
 where access_token is null;
 alter table public.bookings alter column access_token set not null;
 
 create index if not exists bookings_created_at_idx on public.bookings (created_at desc);
+create index if not exists bookings_active_created_at_idx on public.bookings (created_at desc) where deleted_at is null;
 create unique index if not exists bookings_access_token_idx on public.bookings (access_token);
 create index if not exists bookings_route_idx on public.bookings (
   lower(trim(pickup_location)),
@@ -102,7 +111,7 @@ using (false)
 with check (false);
 
 comment on table public.bookings is
-  'Bookings are accessed only through Next.js API routes. Browser clients must not query this table directly. Driver APIs verify Supabase Auth, then server-side service role performs database operations. Customer access is only by private access_token through /api/bookings/token/:token.';
+  'Bookings are accessed only through Next.js API routes. Browser clients must not query this table directly. Driver APIs verify Supabase Auth, then server-side service role performs database operations. Customer access is only by private access_token through /api/bookings/token/:token. Driver deletes are soft deletes using deleted_at/deleted_by.';
 
 comment on table public.driver_push_subscriptions is
   'Driver PWA push subscriptions. Accessed only through authenticated Next.js driver API routes using the server-side service role.';

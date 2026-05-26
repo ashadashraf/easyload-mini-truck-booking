@@ -25,6 +25,7 @@ export function DriverDashboard({
   const [recordErrors, setRecordErrors] = useState<Record<number, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [savingId, setSavingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [language, setLanguage] = useState<"en" | "ml">("en");
   const finalPriceRefs = useRef<Record<number, HTMLInputElement | null>>({});
@@ -60,6 +61,9 @@ export function DriverDashboard({
         whatsapp: "WhatsApp",
         saveNotes: "Save price/notes",
         reject: "Reject",
+        deleteBooking: "Delete",
+        deletingBooking: "Deleting...",
+        deleteConfirm: "Delete booking {id}? This will hide it from the driver dashboard but keep it safely archived.",
         setStatusPrefix: "Set",
         languageLabel: "Choose language",
         english: "English",
@@ -94,6 +98,9 @@ export function DriverDashboard({
         whatsapp: "വാട്ട്‌സ്ആപ്പ്",
         saveNotes: "വില/കുറിപ്പുകൾ സേവ് ചെയ്യുക",
         reject: "നിരസിക്കുക",
+        deleteBooking: "Delete",
+        deletingBooking: "Deleting...",
+        deleteConfirm: "Delete booking {id}? This will hide it from the driver dashboard but keep it safely archived.",
         setStatusPrefix: "സജ്ജമാക്കുക",
         languageLabel: "ഭാഷ തിരഞ്ഞെടുക്കുക",
         english: "English",
@@ -232,6 +239,55 @@ export function DriverDashboard({
       }));
     } finally {
       setSavingId(null);
+    }
+  }
+
+  async function deleteBooking(booking: Booking) {
+    const confirmed = window.confirm(copy.deleteConfirm.replace("{id}", booking.id.toString()));
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingId(booking.id);
+    setRecordErrors((current) => {
+      const next = { ...current };
+      delete next[booking.id];
+      return next;
+    });
+
+    try {
+      const response = await fetch(`/api/bookings/${booking.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${driverAccessToken}`
+        }
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Could not delete booking.");
+      }
+
+      setBookings((current) => current.filter((item) => item.id !== booking.id));
+      setDrafts((current) => {
+        const next = { ...current };
+        delete next[booking.id];
+        return next;
+      });
+      setRecordErrors((current) => {
+        const next = { ...current };
+        delete next[booking.id];
+        return next;
+      });
+      delete finalPriceRefs.current[booking.id];
+    } catch (caught) {
+      setRecordErrors((current) => ({
+        ...current,
+        [booking.id]: caught instanceof Error ? caught.message : "Could not delete this booking."
+      }));
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -426,7 +482,11 @@ export function DriverDashboard({
                 >
                   {copy.whatsapp}
                 </a>
-                <button disabled={savingId === booking.id} onClick={() => updateBooking(booking)} type="button">
+                <button
+                  disabled={savingId === booking.id || deletingId === booking.id}
+                  onClick={() => updateBooking(booking)}
+                  type="button"
+                >
                   {copy.saveNotes}
                 </button>
               </div>
@@ -441,7 +501,7 @@ export function DriverDashboard({
                           ? "backward"
                           : undefined
                     }
-                    disabled={savingId === booking.id}
+                    disabled={savingId === booking.id || deletingId === booking.id}
                     key={status}
                     onClick={() => updateBooking(booking, status)}
                     type="button"
@@ -455,6 +515,14 @@ export function DriverDashboard({
                           : `${copy.setStatusPrefix} ${STATUS_LABELS[status]}`}
                   </button>
                 ))}
+                <button
+                  className="danger"
+                  disabled={savingId === booking.id || deletingId === booking.id}
+                  onClick={() => deleteBooking(booking)}
+                  type="button"
+                >
+                  {deletingId === booking.id ? copy.deletingBooking : copy.deleteBooking}
+                </button>
               </div>
             </article>
           );

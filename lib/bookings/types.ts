@@ -21,11 +21,13 @@ export type Booking = {
   status: BookingStatus;
   customer_notes: string | null;
   driver_notes: string | null;
+  deleted_at: string | null;
+  deleted_by: string | null;
   created_at: string;
   updated_at: string;
 };
 
-export type CustomerBooking = Omit<Booking, "access_token" | "phone_number" | "estimate_source">;
+export type CustomerBooking = Omit<Booking, "access_token" | "phone_number" | "estimate_source" | "deleted_at" | "deleted_by">;
 
 export type CreateBookingInput = {
   pickup_location: string;

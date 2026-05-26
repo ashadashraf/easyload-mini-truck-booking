@@ -30,6 +30,8 @@ const BOOKING_COLUMNS = `
   status,
   customer_notes,
   driver_notes,
+  deleted_at,
+  deleted_by,
   created_at,
   updated_at
 `;
@@ -39,6 +41,7 @@ export async function listBookings(): Promise<Booking[]> {
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_COLUMNS)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -54,6 +57,7 @@ export async function getBooking(id: string): Promise<Booking | null> {
     .from("bookings")
     .select(BOOKING_COLUMNS)
     .eq("id", id)
+    .is("deleted_at", null)
     .maybeSingle();
 
   if (error) {
@@ -104,6 +108,7 @@ export async function getBookingByAccessToken(accessToken: string): Promise<Book
     .from("bookings")
     .select(BOOKING_COLUMNS)
     .eq("access_token", accessToken)
+    .is("deleted_at", null)
     .maybeSingle();
 
   if (error) {
@@ -156,6 +161,30 @@ export async function updateBooking(id: string, input: UpdateBookingInput): Prom
     .from("bookings")
     .update(patch)
     .eq("id", id)
+    .is("deleted_at", null)
+    .select(BOOKING_COLUMNS)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data ? mapBookingRow(data as BookingRow) : null;
+}
+
+export async function softDeleteBooking(id: string, deletedBy: string | null): Promise<Booking | null> {
+  const supabase = getSupabaseServerClient();
+  const deletedAt = new Date().toISOString();
+
+  const { data, error } = await supabase
+    .from("bookings")
+    .update({
+      deleted_at: deletedAt,
+      deleted_by: deletedBy,
+      updated_at: deletedAt
+    })
+    .eq("id", id)
+    .is("deleted_at", null)
     .select(BOOKING_COLUMNS)
     .maybeSingle();
 
@@ -174,6 +203,7 @@ async function getFareEstimate(input: CreateBookingInput) {
     .ilike("pickup_location", input.pickup_location)
     .ilike("drop_location", input.drop_location)
     .not("estimated_distance_km", "is", null)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
