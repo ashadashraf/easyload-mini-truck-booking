@@ -31,6 +31,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
           "x-default": absoluteUrl("/")
         }
       }
+    },
+    {
+      url: absoluteUrl("/blog"),
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.75
     }
   ];
 

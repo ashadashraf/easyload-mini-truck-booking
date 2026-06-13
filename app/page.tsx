@@ -116,6 +116,7 @@ export default function HomePage() {
                 {guide.title}
               </a>
             ))}
+            <a href="/blog">View all UAE moving blog guides</a>
           </div>
         </section>
         <AppFooter />

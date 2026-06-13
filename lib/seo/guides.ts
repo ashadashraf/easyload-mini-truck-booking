@@ -95,6 +95,114 @@ export const seoGuides: SeoGuide[] = [
         arText: "أرسل موقع الاستلام والتسليم بدقة عبر واتساب حتى يصل السائق إلى المدخل الصحيح."
       }
     ]
+  },
+  {
+    slug: "furniture-moving-cost-dubai",
+    title: "How Much Does Furniture Moving Cost in Dubai?",
+    arTitle: "How Much Does Furniture Moving Cost in Dubai?",
+    description: "A practical guide to the factors that affect furniture moving and pickup truck prices in Dubai.",
+    arDescription: "A practical guide to the factors that affect furniture moving and pickup truck prices in Dubai.",
+    sections: [
+      {
+        title: "Route and distance matter",
+        text: "Pickup and drop-off areas affect the estimate, especially when the job crosses busy Dubai zones or requires inter-emirate travel.",
+        arTitle: "Route and distance matter",
+        arText: "Pickup and drop-off areas affect the estimate, especially when the job crosses busy Dubai zones or requires inter-emirate travel."
+      },
+      {
+        title: "Load size changes the quote",
+        text: "A few boxes usually cost less than sofas, wardrobes, appliances or bulky items that need careful handling.",
+        arTitle: "Load size changes the quote",
+        arText: "A few boxes usually cost less than sofas, wardrobes, appliances or bulky items that need careful handling."
+      },
+      {
+        title: "Access can add time",
+        text: "Tower permissions, loading bays, basement parking, lift timings and helper needs can affect the final price.",
+        arTitle: "Access can add time",
+        arText: "Tower permissions, loading bays, basement parking, lift timings and helper needs can affect the final price."
+      }
+    ]
+  },
+  {
+    slug: "move-1-bedroom-apartment-dubai",
+    title: "How to Move a 1 Bedroom Apartment in Dubai",
+    arTitle: "How to Move a 1 Bedroom Apartment in Dubai",
+    description: "Plan a small apartment move in Dubai with pickup timing, building access, packing and helper tips.",
+    arDescription: "Plan a small apartment move in Dubai with pickup timing, building access, packing and helper tips.",
+    sections: [
+      {
+        title: "List the main items",
+        text: "Share beds, sofa sets, dining tables, wardrobes, appliances and carton counts so the driver can judge the load.",
+        arTitle: "List the main items",
+        arText: "Share beds, sofa sets, dining tables, wardrobes, appliances and carton counts so the driver can judge the load."
+      },
+      {
+        title: "Confirm building rules",
+        text: "Many Dubai buildings require move-in or move-out approval, lift booking or security permission before the truck arrives.",
+        arTitle: "Confirm building rules",
+        arText: "Many Dubai buildings require move-in or move-out approval, lift booking or security permission before the truck arrives."
+      },
+      {
+        title: "Choose the right time",
+        text: "Avoid peak traffic when possible and allow extra time for loading, unloading and elevator waiting.",
+        arTitle: "Choose the right time",
+        arText: "Avoid peak traffic when possible and allow extra time for loading, unloading and elevator waiting."
+      }
+    ]
+  },
+  {
+    slug: "move-washing-machine-dubai",
+    title: "How to Transport a Washing Machine Safely in Dubai",
+    arTitle: "How to Transport a Washing Machine Safely in Dubai",
+    description: "Simple steps for moving a washing machine by pickup truck without leaks, scratches or delays.",
+    arDescription: "Simple steps for moving a washing machine by pickup truck without leaks, scratches or delays.",
+    sections: [
+      {
+        title: "Drain and disconnect first",
+        text: "Empty the machine, disconnect hoses and secure the cable before the pickup arrives.",
+        arTitle: "Drain and disconnect first",
+        arText: "Empty the machine, disconnect hoses and secure the cable before the pickup arrives."
+      },
+      {
+        title: "Keep it upright",
+        text: "A washing machine should usually travel upright and be protected from movement during loading and transport.",
+        arTitle: "Keep it upright",
+        arText: "A washing machine should usually travel upright and be protected from movement during loading and transport."
+      },
+      {
+        title: "Request help if needed",
+        text: "Choose helper support for stairs, tight corridors, heavy lifting or buildings without easy trolley access.",
+        arTitle: "Request help if needed",
+        arText: "Choose helper support for stairs, tight corridors, heavy lifting or buildings without easy trolley access."
+      }
+    ]
+  },
+  {
+    slug: "best-areas-pickup-truck-dubai",
+    title: "Best Areas to Book a Pickup Truck in Dubai",
+    arTitle: "Best Areas to Book a Pickup Truck in Dubai",
+    description: "Common Dubai areas for pickup truck bookings, from apartments and villas to shops and warehouses.",
+    arDescription: "Common Dubai areas for pickup truck bookings, from apartments and villas to shops and warehouses.",
+    sections: [
+      {
+        title: "Apartment-heavy areas",
+        text: "Dubai Marina, JVC, Business Bay, Downtown Dubai and Deira often need pickups for room moves, furniture and appliances.",
+        arTitle: "Apartment-heavy areas",
+        arText: "Dubai Marina, JVC, Business Bay, Downtown Dubai and Deira often need pickups for room moves, furniture and appliances."
+      },
+      {
+        title: "Commercial pickup zones",
+        text: "Al Quoz, Ras Al Khor, Deira and Sharjah Industrial Area are common for shop stock, workshop items and cargo trips.",
+        arTitle: "Commercial pickup zones",
+        arText: "Al Quoz, Ras Al Khor, Deira and Sharjah Industrial Area are common for shop stock, workshop items and cargo trips."
+      },
+      {
+        title: "Plan around access",
+        text: "The best area is the one where parking, loading access and timing are clear before the driver reaches the location.",
+        arTitle: "Plan around access",
+        arText: "The best area is the one where parking, loading access and timing are clear before the driver reaches the location."
+      }
+    ]
   }
 ];
 

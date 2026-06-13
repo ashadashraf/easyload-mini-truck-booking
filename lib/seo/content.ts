@@ -69,6 +69,61 @@ export const seoCities: SeoCity[] = [
     arAngle: "نقل صناعي وتوصيل الورش والأثاث وحركة بضائع المتاجر"
   },
   {
+    slug: "dubai-marina",
+    name: "Dubai Marina",
+    arName: "Dubai Marina",
+    region: "Dubai",
+    priority: 0.88,
+    neighborhoods: ["JBR", "Marina Walk", "Marina Promenade", "Dubai Media City", "JLT"],
+    arNeighborhoods: ["JBR", "Marina Walk", "Marina Promenade", "Dubai Media City", "JLT"],
+    angle: "tower apartment moves, furniture pickup, appliance transport and scheduled loading bay jobs",
+    arAngle: "tower apartment moves, furniture pickup, appliance transport and scheduled loading bay jobs"
+  },
+  {
+    slug: "jvc",
+    name: "JVC",
+    arName: "JVC",
+    region: "Dubai",
+    priority: 0.86,
+    neighborhoods: ["Jumeirah Village Circle", "JVT", "Dubai Sports City", "Arjan", "Motor City"],
+    arNeighborhoods: ["Jumeirah Village Circle", "JVT", "Dubai Sports City", "Arjan", "Motor City"],
+    angle: "small apartment shifting, room moves, furniture delivery and affordable pickup trips",
+    arAngle: "small apartment shifting, room moves, furniture delivery and affordable pickup trips"
+  },
+  {
+    slug: "business-bay",
+    name: "Business Bay",
+    arName: "Business Bay",
+    region: "Dubai",
+    priority: 0.86,
+    neighborhoods: ["Bay Square", "Executive Towers", "Damac Maison", "Downtown Dubai", "Al Quoz"],
+    arNeighborhoods: ["Bay Square", "Executive Towers", "Damac Maison", "Downtown Dubai", "Al Quoz"],
+    angle: "office moves, apartment shifting, furniture transport and time-sensitive commercial deliveries",
+    arAngle: "office moves, apartment shifting, furniture transport and time-sensitive commercial deliveries"
+  },
+  {
+    slug: "downtown-dubai",
+    name: "Downtown Dubai",
+    arName: "Downtown Dubai",
+    region: "Dubai",
+    priority: 0.84,
+    neighborhoods: ["Burj Khalifa", "Dubai Mall", "Old Town", "DIFC", "Business Bay"],
+    arNeighborhoods: ["Burj Khalifa", "Dubai Mall", "Old Town", "DIFC", "Business Bay"],
+    angle: "building-managed moves, furniture pickup, appliance delivery and compact cargo transport",
+    arAngle: "building-managed moves, furniture pickup, appliance delivery and compact cargo transport"
+  },
+  {
+    slug: "al-barsha",
+    name: "Al Barsha",
+    arName: "Al Barsha",
+    region: "Dubai",
+    priority: 0.83,
+    neighborhoods: ["Barsha Heights", "Mall of the Emirates", "Al Sufouh", "The Greens", "Umm Suqeim"],
+    arNeighborhoods: ["Barsha Heights", "Mall of the Emirates", "Al Sufouh", "The Greens", "Umm Suqeim"],
+    angle: "family moves, furniture collection, appliance transport and budget-friendly pickup jobs",
+    arAngle: "family moves, furniture collection, appliance transport and budget-friendly pickup jobs"
+  },
+  {
     slug: "ajman",
     name: "Ajman",
     arName: "عجمان",
@@ -200,6 +255,10 @@ export function getSeoLandingPages() {
 export const featuredSeoLinks = [
   { citySlug: "dubai", serviceSlug: "pickup-truck-service" },
   { citySlug: "dubai", serviceSlug: "1-ton-pickup" },
+  { citySlug: "dubai-marina", serviceSlug: "1-ton-pickup" },
+  { citySlug: "jvc", serviceSlug: "moving-service" },
+  { citySlug: "business-bay", serviceSlug: "movers" },
+  { citySlug: "al-barsha", serviceSlug: "pickup-truck-service" },
   { citySlug: "al-quoz", serviceSlug: "pickup-truck-service" },
   { citySlug: "sharjah", serviceSlug: "movers" },
   { citySlug: "abu-dhabi", serviceSlug: "cargo-transport" },
